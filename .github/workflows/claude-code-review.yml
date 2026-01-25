@@ -24,12 +24,35 @@ jobs:
       pull-requests: read
       issues: read
       id-token: write
+      actions: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright browsers
+        run: |
+          npx playwright install --with-deps chromium
+
+      - name: Create MCP Config for Playwright
+        run: |
+          cat > /tmp/mcp-config.json << 'EOF'
+          {
+            "mcpServers": {
+              "playwright": {
+                "command": "npx",
+                "args": ["@playwright/mcp@latest", "--headless"]
+              }
+            }
+          }
+          EOF
 
       - name: Run Claude Code Review
         id: claude-review
@@ -38,7 +61,38 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
+          prompt: |
+            /code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+
+            When reviewing this Pull Request:
+            1. Run the development server using `composer dev`
+            2. Test all new functionalities in the browser using Playwright MCP
+            3. Verify all acceptance criteria are met
+            4. Check for any regressions or unintended side effects
+            5. Ensure UI/UX works as expected
+            6. Verify Livewire interactions function correctly
+            7. Test responsive design across different screen sizes
+            8. Check for console errors or warnings
+          claude_args: |
+            --mcp-config /tmp/mcp-config.json
+            --allowedTools mcp__plugin_playwright_playwright__*
+          settings: |
+            {
+              "permissions": {
+                "allow": [
+                  "Bash",
+                  "Read",
+                  "Glob",
+                  "Grep",
+                  "Task",
+                  "mcp__plugin_playwright_playwright__*"
+                ],
+                "deny": []
+              },
+              "enableAllProjectMcpServers": true
+            }
+          additional_permissions: |
+            actions: read
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
 
