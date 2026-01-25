@@ -43,7 +43,7 @@
     </div>
 
     <!-- Mobile: Vertical card layout -->
-    <div class="flex flex-col gap-4 md:hidden">
+    <div class="flex flex-col gap-4 lg:hidden">
         @foreach($weekDays as $day)
             <div id="day-{{ $day->format('Y-m-d') }}" class="bg-white border border-stone-200 rounded-lg overflow-hidden {{ $day->isToday() ? 'ring-2 ring-forest-200' : '' }}">
                 <!-- Day header -->
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Desktop: Original 7-column grid layout -->
-    <div class="hidden md:block overflow-x-auto">
+    <div class="hidden lg:block overflow-x-auto">
         <div class="grid grid-cols-7 gap-3 min-w-[700px]">
             <!-- Capçaleres dels dies -->
             @foreach($weekDays as $day)
