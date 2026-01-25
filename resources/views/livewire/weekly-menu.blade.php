@@ -88,7 +88,7 @@
     </div>
 
     <!-- Desktop: Original 7-column grid layout -->
-    <div class="hidden lg:block overflow-x-auto">
+    <div class="hidden lg:block">
         <div class="grid grid-cols-7 gap-3 min-w-[700px]">
             <!-- Capçaleres dels dies -->
             @foreach($weekDays as $day)
@@ -104,7 +104,7 @@
 
             <!-- Files de Dinar -->
             @foreach($weekDays as $day)
-                <div class="min-h-[100px] {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
+                <div class="min-h-[100px] overflow-visible {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
                     <div class="text-xs font-medium text-stone-500 mb-2 uppercase tracking-wide">Dinar</div>
                     <livewire:meal-slot
                         :date="$day->format('Y-m-d')"
@@ -116,7 +116,7 @@
 
             <!-- Files de Sopar -->
             @foreach($weekDays as $day)
-                <div class="min-h-[100px] {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
+                <div class="min-h-[100px] overflow-visible {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
                     <div class="text-xs font-medium text-stone-500 mb-2 uppercase tracking-wide">Sopar</div>
                     <livewire:meal-slot
                         :date="$day->format('Y-m-d')"
