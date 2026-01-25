@@ -31,6 +31,46 @@ npm run dev           # Vite dev server with HMR
 ./vendor/bin/pint     # Laravel Pint code formatting
 ```
 
+## Git Workflow
+
+### Feature Development
+- **Always create a new branch** for each feature or fix
+- Branch naming convention: `feature/description` or `fix/description`
+- After completing work on a branch, **create a Pull Request** to merge into `dev`
+- Do not merge directly to dev
+
+### Workflow Steps
+1. Create a new branch from dev: `git checkout -b feature/feature-name`
+2. Implement the feature with commits
+3. Push the branch to remote
+4. Create a Pull Request targeting `dev`
+5. After PR approval and merge, pull latest dev and delete the feature branch
+
+### PR Review Process
+When reviewing a Pull Request as code advisor:
+- Run a dev server using `composer dev`
+- Test the new functionalities in the browser using Playwright MCP
+- Verify all acceptance criteria are met
+- Check for any regressions or unintended side effects
+
+## Testing & Quality Assurance
+
+### Testing Requirements
+When implementing changes, **always**:
+1. **Write unit tests** for new functionality or bug fixes using PHPUnit
+   - Implement **happy path tests**: verify expected behavior with valid inputs
+   - Implement **sad path tests**: verify error handling with invalid inputs, edge cases, and failure scenarios
+2. **Test in the browser** using the Playwright MCP to verify:
+   - UI/UX works as expected
+   - Livewire interactions function correctly
+   - Responsive design works across different screen sizes
+   - No console errors or warnings
+
+### Testing Workflow
+- Run `composer test` to verify unit tests pass
+- Use Playwright MCP tools to navigate and interact with the application
+- Verify the changes work end-to-end before creating a PR
+
 ## Architecture
 
 ### Domain Models
