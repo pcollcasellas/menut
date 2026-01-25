@@ -5,7 +5,7 @@
 
         <!-- Modal -->
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-xl shadow-xl {{ $mode === 'edit' ? 'max-w-4xl' : 'max-w-md' }} w-full max-h-[80vh] overflow-hidden" wire:click.stop>
+            <div class="bg-white rounded-xl shadow-xl {{ $mode === 'edit' ? 'max-w-[95vw] sm:max-w-md md:max-w-4xl' : 'max-w-[95vw] sm:max-w-md' }} w-full max-h-[80vh] overflow-hidden" wire:click.stop>
                 <!-- Header -->
                 <div class="px-6 py-4 border-b border-stone-200 flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-stone-800">
@@ -168,8 +168,8 @@
                                 $mealTypes = ['lunch' => 'Dinar', 'dinner' => 'Sopar'];
                             @endphp
 
-                            <div class="overflow-x-auto">
-                                <table class="w-full border-collapse">
+                            <div class="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
+                                <table class="w-full border-collapse min-w-[600px] sm:min-w-0">
                                     <thead>
                                         <tr>
                                             <th class="p-2 text-xs font-medium text-stone-500 text-left w-16"></th>
@@ -192,7 +192,7 @@
                                                         <div class="relative">
                                                             <button
                                                                 wire:click="toggleSlotSelector('{{ $slotKey }}')"
-                                                                class="w-full min-h-[60px] p-2 rounded-lg border {{ $recipe ? 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100' : 'bg-stone-50 border-stone-200 hover:bg-stone-100 border-dashed' }} transition-colors text-left"
+                                                                class="w-full min-h-[56px] sm:min-h-[60px] p-2 rounded-lg border {{ $recipe ? 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100' : 'bg-stone-50 border-stone-200 hover:bg-stone-100 border-dashed' }} transition-colors text-left"
                                                             >
                                                                 @if($recipe)
                                                                     <span class="text-xs font-medium text-emerald-800 line-clamp-2">{{ $recipe->name }}</span>
@@ -207,7 +207,7 @@
 
                                                             <!-- Dropdown selector -->
                                                             @if($activeSlot === $slotKey)
-                                                                <div class="absolute z-10 mt-1 w-48 bg-white rounded-lg shadow-lg border border-stone-200 max-h-48 overflow-y-auto left-0">
+                                                                <div class="absolute z-10 mt-1 w-48 bg-white rounded-lg shadow-lg border border-stone-200 max-h-48 overflow-y-auto left-0 sm:left-auto">
                                                                     @if($recipe)
                                                                         <button
                                                                             wire:click="updateSlot('{{ $slotKey }}', null)"

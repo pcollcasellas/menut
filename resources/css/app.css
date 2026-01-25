@@ -125,7 +125,7 @@
 
     /* Meal slot styles */
     .meal-slot {
-        @apply min-h-[100px] bg-white border border-cream-200 rounded-2xl p-4 transition-all duration-200;
+        @apply min-h-[56px] sm:min-h-[100px] bg-white border border-cream-200 rounded-2xl p-4 transition-all duration-200;
     }
 
     .meal-slot:hover {
@@ -134,6 +134,11 @@
 
     .meal-slot-today {
         @apply bg-gradient-to-br from-forest-50 to-sage-50 ring-2 ring-forest-200 border-transparent;
+    }
+
+    /* Touch-friendly utility */
+    .touch-target {
+        @apply min-h-[44px] min-w-[44px];
     }
 
     /* Week day header */
