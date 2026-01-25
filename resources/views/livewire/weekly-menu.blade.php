@@ -11,7 +11,7 @@
     }
 }" x-init="mounted()">
     <!-- Header amb navegació de setmanes -->
-    <div class="sticky top-0 z-10 bg-white pb-4 pt-2 -mt-2 flex flex-col sm:flex-row items-center justify-between mb-6 gap-3 sm:gap-0">
+    <div class="sticky top-16 z-20 bg-white pb-4 pt-2 -mt-2 flex flex-col sm:flex-row items-center justify-between mb-6 gap-3 sm:gap-0">
         <button wire:click="previousWeek" class="p-3 w-12 h-12 sm:p-2 sm:w-auto sm:h-auto text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors">
             <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -43,7 +43,7 @@
     </div>
 
     <!-- Mobile: Vertical card layout -->
-    <div class="flex flex-col gap-4 md:hidden">
+    <div class="flex flex-col gap-4 lg:hidden">
         @foreach($weekDays as $day)
             <div id="day-{{ $day->format('Y-m-d') }}" class="bg-white border border-stone-200 rounded-lg overflow-hidden {{ $day->isToday() ? 'ring-2 ring-forest-200' : '' }}">
                 <!-- Day header -->
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Desktop: Original 7-column grid layout -->
-    <div class="hidden md:block overflow-x-auto">
+    <div class="hidden lg:block overflow-x-auto">
         <div class="grid grid-cols-7 gap-3 min-w-[700px]">
             <!-- Capçaleres dels dies -->
             @foreach($weekDays as $day)
