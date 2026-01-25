@@ -20,7 +20,19 @@
 
     <!-- Selector de receptes -->
     @if($showSelector)
-        <div class="absolute z-10 mt-1 w-full max-w-xs md:w-48 md:max-w-none left-0 md:left-auto right-0 md:right-auto mx-auto md:mx-0 bg-white rounded-lg shadow-lg border border-stone-200">
+        <div class="absolute z-50 mt-1 w-full max-w-xs md:w-48 md:max-w-none left-0 md:left-auto right-0 md:right-auto mx-auto md:mx-0 bg-white rounded-lg shadow-lg border border-stone-200">
+            <!-- Barra de cerca -->
+            <div class="p-2 border-b border-stone-200">
+                <flux:input
+                    wire:model.live="searchQuery"
+                    icon="magnifying-glass"
+                    placeholder="Cerca receptes..."
+                    size="sm"
+                    x-data
+                    x-init="$el.querySelector('input').focus()"
+                />
+            </div>
+
             <div class="py-1 max-h-60 md:max-h-48 overflow-y-auto">
                 @if($currentRecipe)
                     <button wire:click="selectRecipe(null)" class="w-full text-left px-4 py-3 md:py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
@@ -35,7 +47,11 @@
                     </button>
                 @empty
                     <div class="px-4 py-3 md:py-2 text-sm text-stone-500">
-                        No hi ha receptes
+                        @if(trim($searchQuery) !== '')
+                            No s'han trobat receptes
+                        @else
+                            No hi ha receptes
+                        @endif
                     </div>
                 @endforelse
             </div>

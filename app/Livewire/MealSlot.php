@@ -16,6 +16,10 @@ class MealSlot extends Component
 
     public ?int $selectedRecipeId = null;
 
+    public string $searchQuery = '';
+
+    protected $listeners = ['selectorOpened' => 'handleSelectorOpened'];
+
     public function mount(string $date, string $mealType): void
     {
         $this->date = $date;
@@ -31,7 +35,27 @@ class MealSlot extends Component
 
     public function toggleSelector(): void
     {
+        $wasOpen = $this->showSelector;
         $this->showSelector = ! $this->showSelector;
+
+        // Clear search query when closing
+        if (! $this->showSelector) {
+            $this->searchQuery = '';
+        }
+
+        // If we're opening this selector, notify all other components to close
+        if ($this->showSelector && ! $wasOpen) {
+            $this->dispatch('selectorOpened', componentId: $this->getId());
+        }
+    }
+
+    public function handleSelectorOpened($componentId): void
+    {
+        // Close this selector if it's not the one that just opened
+        if ($componentId !== $this->getId() && $this->showSelector) {
+            $this->showSelector = false;
+            $this->searchQuery = '';
+        }
     }
 
     public function selectRecipe(?int $recipeId): void
@@ -62,6 +86,7 @@ class MealSlot extends Component
         }
 
         $this->showSelector = false;
+        $this->searchQuery = '';
         $this->dispatch('menu-updated');
     }
 
@@ -76,9 +101,15 @@ class MealSlot extends Component
 
     public function render()
     {
+        $recipesQuery = Recipe::where('user_id', auth()->id());
+
+        if (trim($this->searchQuery) !== '') {
+            $recipesQuery->where('name', 'like', '%' . $this->searchQuery . '%');
+        }
+
         return view('livewire.meal-slot', [
             'currentRecipe' => $this->getCurrentRecipe(),
-            'recipes' => Recipe::where('user_id', auth()->id())->orderBy('name')->get(),
+            'recipes' => $recipesQuery->orderBy('name')->get(),
         ]);
     }
 }
