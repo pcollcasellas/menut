@@ -1,6 +1,14 @@
+@import '../../vendor/livewire/flux/dist/flux.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Fix Flux icon sizes for Tailwind v3 compatibility */
+[data-flux-icon] {
+    width: 1rem !important;
+    height: 1rem !important;
+}
 
 @layer base {
     /* Smooth scrolling */

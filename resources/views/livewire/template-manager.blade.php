@@ -8,7 +8,7 @@
             <div class="bg-white rounded-xl shadow-xl {{ $mode === 'edit' ? 'max-w-[95vw] sm:max-w-md md:max-w-4xl' : 'max-w-[95vw] sm:max-w-md' }} w-full max-h-[80vh] overflow-hidden" wire:click.stop>
                 <!-- Header -->
                 <div class="px-6 py-4 border-b border-stone-200 flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-stone-800">
+                    <flux:heading size="lg">
                         @if($mode === 'save')
                             Desar plantilla
                         @elseif($mode === 'import')
@@ -18,12 +18,8 @@
                         @else
                             Plantilles
                         @endif
-                    </h3>
-                    <button wire:click="closeModal" class="text-stone-400 hover:text-stone-600 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+                    </flux:heading>
+                    <flux:button wire:click="closeModal" variant="ghost" icon="x-mark" square size="sm" />
                 </div>
 
                 <!-- Content -->
@@ -31,45 +27,41 @@
                     @if($mode === 'list')
                         <!-- Template list -->
                         <div class="space-y-3">
-                            <button wire:click="showSaveForm" class="w-full p-3 rounded-lg border-2 border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50 transition-colors">
-                                <span class="text-sm text-stone-600 flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                    Desar menu actual com a plantilla
-                                </span>
-                            </button>
+                            <flux:button wire:click="showSaveForm" variant="outline" icon="plus" class="w-full border-2 border-dashed border-stone-300 hover:border-emerald-400 hover:bg-emerald-50">
+                                Desar menu actual com a plantilla
+                            </flux:button>
 
                             @if($templates->count() > 0)
                                 <hr class="border-stone-200 my-4">
-                                <p class="text-xs font-medium text-stone-500 uppercase tracking-wide mb-2">Les teves plantilles</p>
+                                <flux:text size="xs" class="font-medium text-stone-500 uppercase tracking-wide mb-2">Les teves plantilles</flux:text>
                             @endif
 
                             @foreach($templates as $template)
                                 <div class="flex items-center justify-between p-3 bg-stone-50 rounded-lg hover:bg-stone-100 transition-colors">
                                     <button wire:click="showImportForm({{ $template->id }})" class="flex-1 text-left">
-                                        <span class="text-sm font-medium text-stone-800 block">{{ $template->name }}</span>
-                                        <span class="text-xs text-stone-500">{{ $template->items_count }} receptes</span>
+                                        <flux:text class="font-medium text-stone-800 block">{{ $template->name }}</flux:text>
+                                        <flux:text size="xs" class="text-stone-500">{{ $template->items_count }} receptes</flux:text>
                                     </button>
                                     <div class="flex items-center">
-                                        <button wire:click="showEditForm({{ $template->id }})" class="p-2 text-stone-400 hover:text-emerald-600 transition-colors" title="Editar plantilla">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                                            </svg>
-                                        </button>
-                                        <button wire:click="deleteTemplate({{ $template->id }})" wire:confirm="Segur que vols eliminar aquesta plantilla?" class="p-2 text-stone-400 hover:text-red-600 transition-colors" title="Eliminar plantilla">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>
+                                        <flux:button wire:click="showEditForm({{ $template->id }})" variant="ghost" icon="pencil" square size="sm" title="Editar plantilla" />
+                                        <flux:button
+                                            wire:click="deleteTemplate({{ $template->id }})"
+                                            wire:confirm="Segur que vols eliminar aquesta plantilla?"
+                                            variant="ghost"
+                                            icon="trash"
+                                            square
+                                            size="sm"
+                                            class="text-stone-400 hover:text-red-600"
+                                            title="Eliminar plantilla"
+                                        />
                                     </div>
                                 </div>
                             @endforeach
 
                             @if($templates->count() === 0)
-                                <p class="text-sm text-stone-500 text-center py-4">
+                                <flux:text size="sm" class="text-stone-500 text-center py-4 block">
                                     Encara no tens plantilles desades.
-                                </p>
+                                </flux:text>
                             @endif
                         </div>
 
@@ -77,29 +69,22 @@
                         <!-- Save form -->
                         <form wire:submit="saveTemplate">
                             <div class="mb-4">
-                                <label for="templateName" class="block text-sm font-medium text-stone-700 mb-1">
-                                    Nom de la plantilla
-                                </label>
-                                <input
-                                    type="text"
-                                    id="templateName"
+                                <flux:input
                                     wire:model="templateName"
-                                    class="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                                    label="Nom de la plantilla"
+                                    name="templateName"
                                     placeholder="Ex: Menu setmanal habitual"
-                                    autofocus
-                                >
-                                @error('templateName')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                                />
+                                <flux:error name="templateName" />
                             </div>
 
                             <div class="flex gap-3">
-                                <button type="button" wire:click="backToList" class="flex-1 px-4 py-2 text-sm font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors">
+                                <flux:button type="button" wire:click="backToList" variant="ghost" class="flex-1">
                                     Enrere
-                                </button>
-                                <button type="submit" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
+                                </flux:button>
+                                <flux:button type="submit" variant="primary" class="flex-1">
                                     Desar
-                                </button>
+                                </flux:button>
                             </div>
                         </form>
 
@@ -108,37 +93,35 @@
                         <div class="space-y-4">
                             @if($selectedTemplate)
                                 <div class="p-3 bg-emerald-50 rounded-lg">
-                                    <p class="text-sm font-medium text-emerald-800">{{ $selectedTemplate->name }}</p>
-                                    <p class="text-xs text-emerald-600">{{ $selectedTemplate->items->count() }} receptes</p>
+                                    <flux:text class="font-medium text-emerald-800">{{ $selectedTemplate->name }}</flux:text>
+                                    <flux:text size="xs" class="text-emerald-600">{{ $selectedTemplate->items->count() }} receptes</flux:text>
                                 </div>
 
                                 <div>
-                                    <p class="text-sm font-medium text-stone-700 mb-2">Mode d'importacio</p>
-                                    <div class="space-y-2">
-                                        <label class="flex items-start gap-3 p-3 rounded-lg border border-stone-200 cursor-pointer hover:bg-stone-50 transition-colors">
-                                            <input type="radio" wire:model="importMode" value="skip" class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
+                                    <flux:text class="font-medium text-stone-700 mb-2">Mode d'importació</flux:text>
+                                    <flux:radio.group wire:model="importMode" class="space-y-2">
+                                        <flux:radio value="skip" class="p-3 rounded-lg border border-stone-200 cursor-pointer hover:bg-stone-50">
                                             <div>
-                                                <span class="text-sm font-medium text-stone-800 block">Saltar existents</span>
-                                                <span class="text-xs text-stone-500">Nomes omple les caselles buides</span>
+                                                <flux:text class="font-medium text-stone-800 block">Saltar existents</flux:text>
+                                                <flux:text size="xs" class="text-stone-500">Només omple les caselles buides</flux:text>
                                             </div>
-                                        </label>
-                                        <label class="flex items-start gap-3 p-3 rounded-lg border border-stone-200 cursor-pointer hover:bg-stone-50 transition-colors">
-                                            <input type="radio" wire:model="importMode" value="replace" class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
+                                        </flux:radio>
+                                        <flux:radio value="replace" class="p-3 rounded-lg border border-stone-200 cursor-pointer hover:bg-stone-50">
                                             <div>
-                                                <span class="text-sm font-medium text-stone-800 block">Substituir tot</span>
-                                                <span class="text-xs text-stone-500">Sobreescriu tot el menu de la setmana</span>
+                                                <flux:text class="font-medium text-stone-800 block">Substituir tot</flux:text>
+                                                <flux:text size="xs" class="text-stone-500">Sobreescriu tot el menú de la setmana</flux:text>
                                             </div>
-                                        </label>
-                                    </div>
+                                        </flux:radio>
+                                    </flux:radio.group>
                                 </div>
 
                                 <div class="flex gap-3">
-                                    <button type="button" wire:click="backToList" class="flex-1 px-4 py-2 text-sm font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors">
+                                    <flux:button type="button" wire:click="backToList" variant="ghost" class="flex-1">
                                         Enrere
-                                    </button>
-                                    <button type="button" wire:click="importTemplate" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
+                                    </flux:button>
+                                    <flux:button type="button" wire:click="importTemplate" variant="primary" class="flex-1">
                                         Importar
-                                    </button>
+                                    </flux:button>
                                 </div>
                             @endif
                         </div>
@@ -148,18 +131,12 @@
                         <div class="space-y-4">
                             <!-- Template name input -->
                             <div>
-                                <label for="editingTemplateName" class="block text-sm font-medium text-stone-700 mb-1">
-                                    Nom de la plantilla
-                                </label>
-                                <input
-                                    type="text"
-                                    id="editingTemplateName"
+                                <flux:input
                                     wire:model="editingTemplateName"
-                                    class="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-                                >
-                                @error('editingTemplateName')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
+                                    label="Nom de la plantilla"
+                                    name="editingTemplateName"
+                                />
+                                <flux:error name="editingTemplateName" />
                             </div>
 
                             <!-- Grid editor -->
@@ -209,23 +186,27 @@
                                                             @if($activeSlot === $slotKey)
                                                                 <div class="absolute z-10 mt-1 w-48 bg-white rounded-lg shadow-lg border border-stone-200 max-h-48 overflow-y-auto left-0 sm:left-auto">
                                                                     @if($recipe)
-                                                                        <button
+                                                                        <flux:button
                                                                             wire:click="updateSlot('{{ $slotKey }}', null)"
-                                                                            class="w-full px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50 transition-colors border-b border-stone-100"
+                                                                            variant="danger"
+                                                                            size="sm"
+                                                                            class="w-full justify-start rounded-none"
                                                                         >
                                                                             Treure recepta
-                                                                        </button>
+                                                                        </flux:button>
                                                                     @endif
                                                                     @foreach($recipes as $r)
-                                                                        <button
+                                                                        <flux:button
                                                                             wire:click="updateSlot('{{ $slotKey }}', {{ $r->id }})"
-                                                                            class="w-full px-3 py-2 text-left text-xs hover:bg-stone-50 transition-colors {{ $r->id === $recipeId ? 'bg-emerald-50 text-emerald-800' : 'text-stone-700' }}"
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            class="w-full justify-start rounded-none {{ $r->id === $recipeId ? 'bg-emerald-50 text-emerald-800' : '' }}"
                                                                         >
                                                                             {{ $r->name }}
-                                                                        </button>
+                                                                        </flux:button>
                                                                     @endforeach
                                                                     @if($recipes->isEmpty())
-                                                                        <p class="px-3 py-2 text-xs text-stone-500">No tens receptes</p>
+                                                                        <flux:text size="xs" class="px-3 py-2 text-stone-500">No tens receptes</flux:text>
                                                                     @endif
                                                                 </div>
                                                             @endif
@@ -239,12 +220,12 @@
                             </div>
 
                             <div class="flex gap-3 pt-2">
-                                <button type="button" wire:click="backToList" class="flex-1 px-4 py-2 text-sm font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors">
+                                <flux:button type="button" wire:click="backToList" variant="ghost" class="flex-1">
                                     Enrere
-                                </button>
-                                <button type="button" wire:click="saveTemplateChanges" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors">
+                                </flux:button>
+                                <flux:button type="button" wire:click="saveTemplateChanges" variant="primary" class="flex-1">
                                     Desar canvis
-                                </button>
+                                </flux:button>
                             </div>
                         </div>
                     @endif
