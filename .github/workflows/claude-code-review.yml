@@ -61,7 +61,18 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
+          prompt: |
+            /code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+
+            When reviewing this Pull Request:
+            1. Run the development server using `composer dev`
+            2. Test all new functionalities in the browser using Playwright MCP
+            3. Verify all acceptance criteria are met
+            4. Check for any regressions or unintended side effects
+            5. Ensure UI/UX works as expected
+            6. Verify Livewire interactions function correctly
+            7. Test responsive design across different screen sizes
+            8. Check for console errors or warnings
           claude_args: |
             --mcp-config /tmp/mcp-config.json
             --allowedTools mcp__plugin_playwright_playwright__*
@@ -80,16 +91,6 @@ jobs:
               },
               "enableAllProjectMcpServers": true
             }
-          custom_instructions: |
-            When reviewing this Pull Request:
-            1. Run the development server using `composer dev`
-            2. Test all new functionalities in the browser using Playwright MCP
-            3. Verify all acceptance criteria are met
-            4. Check for any regressions or unintended side effects
-            5. Ensure UI/UX works as expected
-            6. Verify Livewire interactions function correctly
-            7. Test responsive design across different screen sizes
-            8. Check for console errors or warnings
           additional_permissions: |
             actions: read
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
