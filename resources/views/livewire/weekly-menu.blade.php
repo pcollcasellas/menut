@@ -45,7 +45,7 @@
     <!-- Mobile: Vertical card layout -->
     <div class="flex flex-col gap-4 lg:hidden">
         @foreach($weekDays as $day)
-            <div id="day-{{ $day->format('Y-m-d') }}" class="bg-white border border-stone-200 rounded-lg overflow-hidden {{ $day->isToday() ? 'ring-2 ring-forest-200' : '' }}">
+            <div id="day-{{ $day->format('Y-m-d') }}" class="bg-white border border-stone-200 rounded-lg overflow-visible {{ $day->isToday() ? 'ring-2 ring-forest-200' : '' }}">
                 <!-- Day header -->
                 <div class="px-4 py-3 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
                     <div>
@@ -62,9 +62,9 @@
                 </div>
 
                 <!-- Meals grid (lunch | dinner) -->
-                <div class="grid grid-cols-2 divide-x divide-stone-200">
+                <div class="grid grid-cols-2 divide-x divide-stone-200 overflow-visible">
                     <!-- Lunch -->
-                    <div class="p-4 {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
+                    <div class="p-4 overflow-visible {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
                         <div class="text-xs font-medium text-stone-500 mb-2 uppercase tracking-wide">Dinar</div>
                         <livewire:meal-slot
                             :date="$day->format('Y-m-d')"
@@ -74,7 +74,7 @@
                     </div>
 
                     <!-- Dinner -->
-                    <div class="p-4 {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
+                    <div class="p-4 overflow-visible {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
                         <div class="text-xs font-medium text-stone-500 mb-2 uppercase tracking-wide">Sopar</div>
                         <livewire:meal-slot
                             :date="$day->format('Y-m-d')"
