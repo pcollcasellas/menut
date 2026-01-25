@@ -16,6 +16,8 @@ class MealSlot extends Component
 
     public ?int $selectedRecipeId = null;
 
+    protected $listeners = ['selectorOpened' => 'handleSelectorOpened'];
+
     public function mount(string $date, string $mealType): void
     {
         $this->date = $date;
@@ -31,7 +33,21 @@ class MealSlot extends Component
 
     public function toggleSelector(): void
     {
+        $wasOpen = $this->showSelector;
         $this->showSelector = ! $this->showSelector;
+
+        // If we're opening this selector, notify all other components to close
+        if ($this->showSelector && ! $wasOpen) {
+            $this->dispatch('selectorOpened', componentId: $this->getId());
+        }
+    }
+
+    public function handleSelectorOpened($componentId): void
+    {
+        // Close this selector if it's not the one that just opened
+        if ($componentId !== $this->getId() && $this->showSelector) {
+            $this->showSelector = false;
+        }
     }
 
     public function selectRecipe(?int $recipeId): void
