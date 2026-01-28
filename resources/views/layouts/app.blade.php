@@ -11,8 +11,11 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=dm-sans:400,500,600,700|dm-serif-display:400,400i&display=swap" rel="stylesheet" />
 
-        <!-- Flux Appearance -->
+        <!-- Flux Appearance - Force light mode for this app -->
         @fluxAppearance
+        <script>
+            window.Flux && window.Flux.applyAppearance('light');
+        </script>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
