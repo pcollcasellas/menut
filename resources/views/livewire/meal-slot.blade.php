@@ -24,8 +24,8 @@
             <!-- Barra de cerca -->
             <div class="p-2 border-b border-stone-200">
                 <flux:input
-                    wire:model.live="searchQuery"
                     icon="magnifying-glass"
+                    wire:model.live="searchQuery"
                     placeholder="Cerca receptes..."
                     size="sm"
                     x-data
