@@ -90,11 +90,45 @@
 
                     @elseif($mode === 'import')
                         <!-- Import form -->
-                        <div class="space-y-4">
+                        <form wire:submit.prevent="importTemplate" class="space-y-4">
                             @if($selectedTemplate)
                                 <div class="p-3 bg-emerald-50 rounded-lg">
                                     <flux:text class="font-medium text-emerald-800">{{ $selectedTemplate->name }}</flux:text>
                                     <flux:text size="xs" class="text-emerald-600">{{ $selectedTemplate->items->count() }} receptes</flux:text>
+
+                                    @php
+                                        $previewDays = ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'];
+                                        $previewMealTypes = ['lunch' => 'Dinar', 'dinner' => 'Sopar'];
+                                    @endphp
+                                    <div class="hidden md:block mt-3">
+                                        <table class="w-full border-collapse text-[10px] text-emerald-900">
+                                            <thead>
+                                                <tr>
+                                                    <th class="p-1 text-left w-12"></th>
+                                                    @foreach($previewDays as $day)
+                                                        <th class="p-1 text-center font-medium">{{ $day }}</th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($previewMealTypes as $mealType => $mealLabel)
+                                                    <tr>
+                                                        <td class="p-1 font-medium text-emerald-700">{{ $mealLabel }}</td>
+                                                        @for($day = 0; $day < 7; $day++)
+                                                            @php
+                                                                $previewName = $selectedTemplatePreview[$day][$mealType] ?? null;
+                                                            @endphp
+                                                            <td class="p-1 align-top">
+                                                                <div class="min-h-[18px] rounded bg-white/70 px-1 text-emerald-900 line-clamp-2">
+                                                                    {{ $previewName ?? '' }}
+                                                                </div>
+                                                            </td>
+                                                        @endfor
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -109,12 +143,12 @@
                                     <flux:button type="button" wire:click="backToList" variant="ghost" class="flex-1">
                                         Enrere
                                     </flux:button>
-                                    <flux:button type="button" wire:click="importTemplate" variant="primary" class="flex-1">
+                                    <flux:button type="submit" variant="primary" class="flex-1">
                                         Importar
                                     </flux:button>
                                 </div>
                             @endif
-                        </div>
+                        </form>
 
                     @elseif($mode === 'edit')
                         <!-- Edit form -->
