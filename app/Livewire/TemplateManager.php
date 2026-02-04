@@ -272,11 +272,38 @@ class TemplateManager extends Component
             ->find($this->selectedTemplateId);
     }
 
+    public function getSelectedTemplatePreview(): array
+    {
+        $preview = [];
+        for ($day = 0; $day < 7; $day++) {
+            $preview[$day] = [
+                'lunch' => null,
+                'dinner' => null,
+            ];
+        }
+
+        $template = $this->getSelectedTemplate();
+        if (! $template) {
+            return $preview;
+        }
+
+        foreach ($template->items as $item) {
+            if (! $item->recipe) {
+                continue;
+            }
+
+            $preview[$item->day_of_week][$item->meal_type] = $item->recipe->name;
+        }
+
+        return $preview;
+    }
+
     public function render()
     {
         return view('livewire.template-manager', [
             'templates' => $this->getTemplates(),
             'selectedTemplate' => $this->getSelectedTemplate(),
+            'selectedTemplatePreview' => $this->getSelectedTemplatePreview(),
             'recipes' => $this->mode === 'edit' ? $this->getEditingRecipes() : collect(),
         ]);
     }

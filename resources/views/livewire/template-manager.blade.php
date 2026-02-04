@@ -1,10 +1,10 @@
 <div>
     @if($showModal)
         <!-- Modal backdrop -->
-        <div class="fixed inset-0 bg-black bg-opacity-50 z-40" wire:click="closeModal"></div>
+        <div class="fixed inset-0 bg-black/50 z-40"></div>
 
         <!-- Modal -->
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4" wire:click="closeModal">
             <div class="bg-white rounded-xl shadow-xl {{ $mode === 'edit' ? 'max-w-[95vw] sm:max-w-md md:max-w-4xl' : 'max-w-[95vw] sm:max-w-md' }} w-full max-h-[80vh] overflow-hidden" wire:click.stop>
                 <!-- Header -->
                 <div class="px-6 py-4 border-b border-stone-200 flex items-center justify-between">
@@ -90,28 +90,52 @@
 
                     @elseif($mode === 'import')
                         <!-- Import form -->
-                        <div class="space-y-4">
+                        <form wire:submit.prevent="importTemplate" class="space-y-4">
                             @if($selectedTemplate)
                                 <div class="p-3 bg-emerald-50 rounded-lg">
                                     <flux:text class="font-medium text-emerald-800">{{ $selectedTemplate->name }}</flux:text>
                                     <flux:text size="xs" class="text-emerald-600">{{ $selectedTemplate->items->count() }} receptes</flux:text>
+
+                                    @php
+                                        $previewDays = ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'];
+                                        $previewMealTypes = ['lunch' => 'Dinar', 'dinner' => 'Sopar'];
+                                    @endphp
+                                    <div class="hidden md:block mt-3">
+                                        <table class="w-full border-collapse text-[10px] text-emerald-900">
+                                            <thead>
+                                                <tr>
+                                                    <th class="p-1 text-left w-12"></th>
+                                                    @foreach($previewDays as $day)
+                                                        <th class="p-1 text-center font-medium">{{ $day }}</th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($previewMealTypes as $mealType => $mealLabel)
+                                                    <tr>
+                                                        <td class="p-1 font-medium text-emerald-700">{{ $mealLabel }}</td>
+                                                        @for($day = 0; $day < 7; $day++)
+                                                            @php
+                                                                $previewName = $selectedTemplatePreview[$day][$mealType] ?? null;
+                                                            @endphp
+                                                            <td class="p-1 align-top">
+                                                                <div class="min-h-[18px] rounded bg-white/70 px-1 text-emerald-900 line-clamp-2">
+                                                                    {{ $previewName ?? '' }}
+                                                                </div>
+                                                            </td>
+                                                        @endfor
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                                 <div>
                                     <flux:text class="font-medium text-stone-700 mb-2">Mode d'importació</flux:text>
                                     <flux:radio.group wire:model="importMode" class="space-y-2">
-                                        <flux:radio value="skip" class="p-3 rounded-lg border border-stone-200 cursor-pointer hover:bg-stone-50">
-                                            <div>
-                                                <flux:text class="font-medium text-stone-800 block">Saltar existents</flux:text>
-                                                <flux:text size="xs" class="text-stone-500">Només omple les caselles buides</flux:text>
-                                            </div>
-                                        </flux:radio>
-                                        <flux:radio value="replace" class="p-3 rounded-lg border border-stone-200 cursor-pointer hover:bg-stone-50">
-                                            <div>
-                                                <flux:text class="font-medium text-stone-800 block">Substituir tot</flux:text>
-                                                <flux:text size="xs" class="text-stone-500">Sobreescriu tot el menú de la setmana</flux:text>
-                                            </div>
-                                        </flux:radio>
+                                        <flux:radio value="skip" label="Saltar existents" description="Només omple les caselles buides" />
+                                        <flux:radio value="replace" label="Substituir tot" description="Sobreescriu tot el menú de la setmana" />
                                     </flux:radio.group>
                                 </div>
 
@@ -119,12 +143,12 @@
                                     <flux:button type="button" wire:click="backToList" variant="ghost" class="flex-1">
                                         Enrere
                                     </flux:button>
-                                    <flux:button type="button" wire:click="importTemplate" variant="primary" class="flex-1">
+                                    <flux:button type="submit" variant="primary" class="flex-1">
                                         Importar
                                     </flux:button>
                                 </div>
                             @endif
-                        </div>
+                        </form>
 
                     @elseif($mode === 'edit')
                         <!-- Edit form -->

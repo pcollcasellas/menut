@@ -286,4 +286,36 @@ class MealSlotTest extends TestCase
         $this->assertEquals('Apple Pie', $recipes->first()->name);
         $this->assertEquals('Zebra Steak', $recipes->last()->name);
     }
+
+    public function test_refresh_from_menu_updates_selected_recipe(): void
+    {
+        $user = User::factory()->create();
+        $recipeA = Recipe::factory()->create(['user_id' => $user->id]);
+        $recipeB = Recipe::factory()->create(['user_id' => $user->id]);
+        $date = Carbon::now()->format('Y-m-d');
+
+        MenuItem::create([
+            'user_id' => $user->id,
+            'date' => $date,
+            'meal_type' => 'lunch',
+            'recipe_id' => $recipeA->id,
+        ]);
+
+        $this->actingAs($user);
+
+        $component = Livewire::test(MealSlot::class, ['date' => $date, 'mealType' => 'lunch'])
+            ->assertSet('selectedRecipeId', $recipeA->id);
+
+        MenuItem::where('user_id', $user->id)
+            ->whereDate('date', $date)
+            ->where('meal_type', 'lunch')
+            ->update(['recipe_id' => $recipeB->id]);
+
+        $component->set('showSelector', true)
+            ->set('searchQuery', 'pasta')
+            ->call('refreshFromMenu')
+            ->assertSet('selectedRecipeId', $recipeB->id)
+            ->assertSet('showSelector', false)
+            ->assertSet('searchQuery', '');
+    }
 }
