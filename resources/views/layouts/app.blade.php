@@ -34,13 +34,13 @@
             @endif
 
             <!-- Page Content -->
-            <main class="animate-fade-in">
+            <main class="animate-fade-in pb-16 sm:pb-0">
                 {{ $slot }}
             </main>
 
             <!-- Footer -->
-            <footer class="mt-auto py-6 text-center">
-                <p class="text-sm text-bark-400">
+            <footer class="fixed inset-x-0 bottom-0 z-20 border-t border-cream-200 bg-cream-50/90 py-3 text-center backdrop-blur-sm sm:static sm:z-auto sm:mt-auto sm:border-t-0 sm:bg-transparent sm:py-6 sm:backdrop-blur-0">
+                <p class="text-xs text-bark-500 sm:text-sm">
                     Menut &middot; Organitzador de menús setmanals
                 </p>
             </footer>
