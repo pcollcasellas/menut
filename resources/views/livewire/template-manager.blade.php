@@ -1,10 +1,10 @@
 <div>
     @if($showModal)
         <!-- Modal backdrop -->
-        <div class="fixed inset-0 bg-black bg-opacity-50 z-40" wire:click="closeModal"></div>
+        <div class="fixed inset-0 bg-black/50 z-40"></div>
 
         <!-- Modal -->
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4" wire:click="closeModal">
             <div class="bg-white rounded-xl shadow-xl {{ $mode === 'edit' ? 'max-w-[95vw] sm:max-w-md md:max-w-4xl' : 'max-w-[95vw] sm:max-w-md' }} w-full max-h-[80vh] overflow-hidden" wire:click.stop>
                 <!-- Header -->
                 <div class="px-6 py-4 border-b border-stone-200 flex items-center justify-between">
@@ -100,18 +100,8 @@
                                 <div>
                                     <flux:text class="font-medium text-stone-700 mb-2">Mode d'importació</flux:text>
                                     <flux:radio.group wire:model="importMode" class="space-y-2">
-                                        <flux:radio value="skip" class="p-3 rounded-lg border border-stone-200 cursor-pointer hover:bg-stone-50">
-                                            <div>
-                                                <flux:text class="font-medium text-stone-800 block">Saltar existents</flux:text>
-                                                <flux:text size="xs" class="text-stone-500">Només omple les caselles buides</flux:text>
-                                            </div>
-                                        </flux:radio>
-                                        <flux:radio value="replace" class="p-3 rounded-lg border border-stone-200 cursor-pointer hover:bg-stone-50">
-                                            <div>
-                                                <flux:text class="font-medium text-stone-800 block">Substituir tot</flux:text>
-                                                <flux:text size="xs" class="text-stone-500">Sobreescriu tot el menú de la setmana</flux:text>
-                                            </div>
-                                        </flux:radio>
+                                        <flux:radio value="skip" label="Saltar existents" description="Només omple les caselles buides" />
+                                        <flux:radio value="replace" label="Substituir tot" description="Sobreescriu tot el menú de la setmana" />
                                     </flux:radio.group>
                                 </div>
 
