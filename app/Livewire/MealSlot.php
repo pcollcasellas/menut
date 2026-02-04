@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\MenuItem;
 use App\Models\Recipe;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class MealSlot extends Component
@@ -25,12 +26,20 @@ class MealSlot extends Component
         $this->date = $date;
         $this->mealType = $mealType;
 
+        $this->refreshFromMenu();
+    }
+
+    #[On('menu-updated')]
+    public function refreshFromMenu(): void
+    {
         $menuItem = MenuItem::where('user_id', auth()->id())
-            ->whereDate('date', $date)
-            ->where('meal_type', $mealType)
+            ->whereDate('date', $this->date)
+            ->where('meal_type', $this->mealType)
             ->first();
 
         $this->selectedRecipeId = $menuItem?->recipe_id;
+        $this->showSelector = false;
+        $this->searchQuery = '';
     }
 
     public function toggleSelector(): void
