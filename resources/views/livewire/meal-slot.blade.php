@@ -1,4 +1,4 @@
-<div class="relative">
+<div class="relative" x-data @click.outside="if ($wire.showSelector) $wire.toggleSelector()">
     @if($currentRecipe)
         <!-- Recepta assignada -->
         <button wire:click="toggleSelector" class="w-full text-left p-3 md:p-2 min-h-[44px] rounded-lg bg-emerald-100 hover:bg-emerald-200 transition-colors">
