@@ -11,23 +11,26 @@
     }
 }" x-init="mounted()">
     <!-- Header amb navegació de setmanes -->
-    <div class="sticky top-16 z-20 bg-white pb-4 pt-2 -mt-2 flex flex-col sm:flex-row items-center justify-between mb-6 gap-3 sm:gap-0">
-        <flux:button wire:click="previousWeek" variant="ghost" icon="chevron-left" square class="w-12 h-12 sm:w-auto sm:h-auto" />
+    <div class="lg:sticky lg:top-16 z-20 bg-white pb-4 pt-2 -mt-2 mb-6">
+        <div class="grid grid-cols-[auto_1fr_auto] items-center gap-2 sm:flex sm:gap-0 sm:items-center sm:justify-between">
+            <flux:button wire:click="previousWeek" variant="ghost" icon="chevron-left" square class="w-12 h-12 sm:w-auto sm:h-auto" />
 
-        <div class="text-center">
-            <flux:heading size="lg" class="text-base md:text-lg">
-                Setmana del {{ \Carbon\Carbon::parse($currentWeekStart)->translatedFormat('j F') }} - {{ \Carbon\Carbon::parse($currentWeekStart)->addDays(6)->translatedFormat('j F, Y') }}
-            </flux:heading>
+            <div class="text-center px-2 sm:px-0">
+                <flux:heading size="lg" class="text-base md:text-lg">
+                    Setmana del {{ \Carbon\Carbon::parse($currentWeekStart)->translatedFormat('j F') }} - {{ \Carbon\Carbon::parse($currentWeekStart)->addDays(6)->translatedFormat('j F, Y') }}
+                </flux:heading>
+            </div>
+
+            <flux:button wire:click="nextWeek" variant="ghost" icon="chevron-right" square class="w-12 h-12 sm:w-auto sm:h-auto" />
         </div>
 
-        <div class="flex gap-2">
+        <div class="mt-3 flex justify-center gap-2 sm:mt-0 sm:justify-end">
             <flux:button wire:click="openTemplates" variant="outline" icon="document-duplicate" size="sm">
                 Plantilles
             </flux:button>
             <flux:button wire:click="goToToday" variant="outline" size="sm">
                 Avui
             </flux:button>
-            <flux:button wire:click="nextWeek" variant="ghost" icon="chevron-right" square class="w-12 h-12 sm:w-auto sm:h-auto" />
         </div>
     </div>
 
@@ -58,7 +61,7 @@
                         <livewire:meal-slot
                             :date="$day->format('Y-m-d')"
                             :mealType="'lunch'"
-                            :key="'lunch-'.$day->format('Y-m-d')"
+                            :key="'mobile-lunch-'.$day->format('Y-m-d')"
                         />
                     </div>
 
@@ -68,10 +71,12 @@
                         <livewire:meal-slot
                             :date="$day->format('Y-m-d')"
                             :mealType="'dinner'"
-                            :key="'dinner-'.$day->format('Y-m-d')"
+                            :key="'mobile-dinner-'.$day->format('Y-m-d')"
                         />
                     </div>
                 </div>
+
+                <div id="day-dropdown-{{ $day->format('Y-m-d') }}" class="mt-2 lg:hidden"></div>
             </div>
         @endforeach
     </div>
@@ -98,7 +103,7 @@
                     <livewire:meal-slot
                         :date="$day->format('Y-m-d')"
                         :mealType="'lunch'"
-                        :key="'lunch-'.$day->format('Y-m-d')"
+                        :key="'desktop-lunch-'.$day->format('Y-m-d')"
                     />
                 </div>
             @endforeach
@@ -110,7 +115,7 @@
                     <livewire:meal-slot
                         :date="$day->format('Y-m-d')"
                         :mealType="'dinner'"
-                        :key="'dinner-'.$day->format('Y-m-d')"
+                        :key="'desktop-dinner-'.$day->format('Y-m-d')"
                     />
                 </div>
             @endforeach
