@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\MenuItem;
 use App\Models\MenuTemplate;
 use App\Models\MenuTemplateItem;
@@ -12,6 +13,8 @@ use Livewire\Component;
 
 class TemplateManager extends Component
 {
+    use BelongsToHousehold;
+
     public bool $showModal = false;
 
     public string $mode = 'list'; // list, save, import, edit
@@ -89,7 +92,7 @@ class TemplateManager extends Component
 
     public function showEditForm(int $templateId): void
     {
-        $template = MenuTemplate::where('user_id', auth()->id())
+        $template = MenuTemplate::where('household_id', $this->householdId())
             ->with('items')
             ->findOrFail($templateId);
 
@@ -133,7 +136,7 @@ class TemplateManager extends Component
     {
         $this->validate(['editingTemplateName' => 'required|string|max:255']);
 
-        $template = MenuTemplate::where('user_id', auth()->id())
+        $template = MenuTemplate::where('household_id', $this->householdId())
             ->findOrFail($this->editingTemplateId);
 
         // Update template name
@@ -160,7 +163,7 @@ class TemplateManager extends Component
 
     public function getEditingRecipes()
     {
-        return Recipe::where('user_id', auth()->id())
+        return Recipe::where('household_id', $this->householdId())
             ->orderBy('name')
             ->get();
     }
@@ -170,6 +173,7 @@ class TemplateManager extends Component
         $this->validate();
 
         $template = MenuTemplate::create([
+            'household_id' => $this->householdId(),
             'user_id' => auth()->id(),
             'name' => $this->templateName,
         ]);
@@ -180,7 +184,7 @@ class TemplateManager extends Component
             $date = $start->copy()->addDays($i);
 
             foreach (['lunch', 'dinner'] as $mealType) {
-                $menuItem = MenuItem::where('user_id', auth()->id())
+                $menuItem = MenuItem::where('household_id', $this->householdId())
                     ->whereDate('date', $date)
                     ->where('meal_type', $mealType)
                     ->first();
@@ -202,7 +206,7 @@ class TemplateManager extends Component
 
     public function importTemplate(): void
     {
-        $template = MenuTemplate::where('user_id', auth()->id())
+        $template = MenuTemplate::where('household_id', $this->householdId())
             ->with('items')
             ->findOrFail($this->selectedTemplateId);
 
@@ -210,7 +214,7 @@ class TemplateManager extends Component
 
         if ($this->importMode === 'replace') {
             // Delete all menu items for this week
-            MenuItem::where('user_id', auth()->id())
+            MenuItem::where('household_id', $this->householdId())
                 ->whereBetween('date', [$start, $start->copy()->addDays(6)])
                 ->delete();
         }
@@ -223,7 +227,7 @@ class TemplateManager extends Component
 
             $date = $start->copy()->addDays($item->day_of_week);
 
-            $existing = MenuItem::where('user_id', auth()->id())
+            $existing = MenuItem::where('household_id', $this->householdId())
                 ->whereDate('date', $date)
                 ->where('meal_type', $item->meal_type)
                 ->first();
@@ -236,6 +240,7 @@ class TemplateManager extends Component
                 $existing->update(['recipe_id' => $item->recipe_id]);
             } else {
                 MenuItem::create([
+                    'household_id' => $this->householdId(),
                     'user_id' => auth()->id(),
                     'date' => $date,
                     'meal_type' => $item->meal_type,
@@ -250,12 +255,12 @@ class TemplateManager extends Component
 
     public function deleteTemplate(int $id): void
     {
-        MenuTemplate::where('user_id', auth()->id())->findOrFail($id)->delete();
+        MenuTemplate::where('household_id', $this->householdId())->findOrFail($id)->delete();
     }
 
     public function getTemplates()
     {
-        return MenuTemplate::where('user_id', auth()->id())
+        return MenuTemplate::where('household_id', $this->householdId())
             ->withCount('items')
             ->orderBy('name')
             ->get();
@@ -267,7 +272,7 @@ class TemplateManager extends Component
             return null;
         }
 
-        return MenuTemplate::where('user_id', auth()->id())
+        return MenuTemplate::where('household_id', $this->householdId())
             ->with('items.recipe')
             ->find($this->selectedTemplateId);
     }

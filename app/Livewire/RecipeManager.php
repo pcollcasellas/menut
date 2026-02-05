@@ -2,11 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\Recipe;
 use Livewire\Component;
 
 class RecipeManager extends Component
 {
+    use BelongsToHousehold;
+
     public bool $showForm = false;
 
     public ?int $editingId = null;
@@ -37,7 +40,7 @@ class RecipeManager extends Component
 
     public function edit(int $id): void
     {
-        $recipe = Recipe::where('user_id', auth()->id())->findOrFail($id);
+        $recipe = Recipe::where('household_id', $this->householdId())->findOrFail($id);
         $this->editingId = $recipe->id;
         $this->name = $recipe->name;
         $this->description = $recipe->description ?? '';
@@ -51,7 +54,7 @@ class RecipeManager extends Component
         $this->validate();
 
         if ($this->editingId) {
-            $recipe = Recipe::where('user_id', auth()->id())->findOrFail($this->editingId);
+            $recipe = Recipe::where('household_id', $this->householdId())->findOrFail($this->editingId);
             $recipe->update([
                 'name' => $this->name,
                 'description' => $this->description,
@@ -60,6 +63,7 @@ class RecipeManager extends Component
             ]);
         } else {
             Recipe::create([
+                'household_id' => $this->householdId(),
                 'user_id' => auth()->id(),
                 'name' => $this->name,
                 'description' => $this->description,
@@ -74,7 +78,7 @@ class RecipeManager extends Component
 
     public function delete(int $id): void
     {
-        Recipe::where('user_id', auth()->id())->findOrFail($id)->delete();
+        Recipe::where('household_id', $this->householdId())->findOrFail($id)->delete();
     }
 
     public function cancel(): void
@@ -96,7 +100,7 @@ class RecipeManager extends Component
     public function render()
     {
         return view('livewire.recipe-manager', [
-            'recipes' => Recipe::where('user_id', auth()->id())->orderBy('name')->get(),
+            'recipes' => Recipe::where('household_id', $this->householdId())->orderBy('name')->get(),
         ]);
     }
 }
