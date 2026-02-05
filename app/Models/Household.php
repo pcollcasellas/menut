@@ -4,34 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Recipe extends Model
+class Household extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'household_id',
-        'user_id',
         'name',
-        'description',
-        'ingredients',
-        'instructions',
     ];
 
-    public function household(): BelongsTo
+    public function users(): HasMany
     {
-        return $this->belongsTo(Household::class);
+        return $this->hasMany(User::class);
     }
 
-    public function user(): BelongsTo
+    public function recipes(): HasMany
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Recipe::class);
     }
 
     public function menuItems(): HasMany
     {
         return $this->hasMany(MenuItem::class);
+    }
+
+    public function menuTemplates(): HasMany
+    {
+        return $this->hasMany(MenuTemplate::class);
     }
 }

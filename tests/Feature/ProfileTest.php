@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Household;
+use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt;
@@ -97,5 +99,46 @@ class ProfileTest extends TestCase
             ->assertNoRedirect();
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_deleting_last_member_deletes_household_and_data(): void
+    {
+        $user = User::factory()->create();
+        $householdId = $user->household_id;
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $householdId]);
+
+        $this->actingAs($user);
+
+        Volt::test('profile.delete-user-form')
+            ->set('password', 'password')
+            ->call('deleteUser');
+
+        $this->assertNull(Household::find($householdId));
+        $this->assertDatabaseMissing('recipes', ['household_id' => $householdId]);
+    }
+
+    public function test_deleting_user_with_other_household_members_preserves_data(): void
+    {
+        $userA = User::factory()->create();
+        $userB = User::factory()->create(['household_id' => $userA->household_id]);
+        $householdId = $userA->household_id;
+
+        Recipe::factory()->create(['user_id' => $userA->id, 'household_id' => $householdId, 'name' => 'Shared Recipe']);
+
+        $this->actingAs($userA);
+
+        Volt::test('profile.delete-user-form')
+            ->set('password', 'password')
+            ->call('deleteUser');
+
+        // Household and data should persist
+        $this->assertNotNull(Household::find($householdId));
+        $this->assertDatabaseHas('recipes', [
+            'household_id' => $householdId,
+            'name' => 'Shared Recipe',
+        ]);
+        // user_id should be null since user was deleted
+        $recipe = Recipe::where('household_id', $householdId)->first();
+        $this->assertNull($recipe->user_id);
     }
 }

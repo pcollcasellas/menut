@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class MenuItem extends Model
 {
     protected $fillable = [
+        'household_id',
         'user_id',
         'date',
         'meal_type',
@@ -17,6 +18,11 @@ class MenuItem extends Model
     protected $casts = [
         'date' => 'date',
     ];
+
+    public function household(): BelongsTo
+    {
+        return $this->belongsTo(Household::class);
+    }
 
     public function user(): BelongsTo
     {

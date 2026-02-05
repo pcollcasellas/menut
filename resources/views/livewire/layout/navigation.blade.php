@@ -60,6 +60,10 @@ new class extends Component
                             Perfil
                         </x-dropdown-link>
 
+                        <x-dropdown-link :href="route('household')" wire:navigate>
+                            Llar
+                        </x-dropdown-link>
+
                         <!-- Authentication -->
                         <button wire:click="logout" class="w-full text-start">
                             <x-dropdown-link>
@@ -103,6 +107,9 @@ new class extends Component
             <div class="mt-3 space-y-1 px-4">
                 <a href="{{ route('profile') }}" wire:navigate class="block px-3 py-2 text-base font-medium text-bark-600 hover:text-bark-800 hover:bg-cream-100 rounded-xl">
                     Perfil
+                </a>
+                <a href="{{ route('household') }}" wire:navigate class="block px-3 py-2 text-base font-medium text-bark-600 hover:text-bark-800 hover:bg-cream-100 rounded-xl">
+                    Llar
                 </a>
                 <button wire:click="logout" class="w-full text-start block px-3 py-2 text-base font-medium text-bark-600 hover:text-bark-800 hover:bg-cream-100 rounded-xl">
                     Tancar sessió

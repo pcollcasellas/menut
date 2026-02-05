@@ -19,10 +19,11 @@ class TemplateImportPreviewTest extends TestCase
     public function test_selected_template_preview_contains_recipe_names(): void
     {
         $user = User::factory()->create();
-        $recipeA = Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Paella']);
-        $recipeB = Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Amanida']);
+        $recipeA = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Paella']);
+        $recipeB = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Amanida']);
 
         $template = MenuTemplate::create([
+            'household_id' => $user->household_id,
             'user_id' => $user->id,
             'name' => 'Setmana normal',
         ]);
@@ -61,6 +62,7 @@ class TemplateImportPreviewTest extends TestCase
         $user = User::factory()->create();
 
         $template = MenuTemplate::create([
+            'household_id' => $user->household_id,
             'user_id' => $user->id,
             'name' => 'Setmana normal',
         ]);
