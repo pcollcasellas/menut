@@ -1,19 +1,13 @@
 <div
     class="relative"
-    x-data="{
-        ownerId: '{{ $this->getId() }}',
-        closeIfOutside(event) {
-            const target = event?.target;
-            if (target && target.closest && target.closest('[data-dropdown-owner=\"' + this.ownerId + '\"]')) {
-                return;
-            }
-
-            if ($wire.showSelector) {
-                $wire.toggleSelector();
-            }
-        }
-    }"
-    @click.outside="closeIfOutside($event)"
+    x-data="{ ownerId: '{{ $this->getId() }}' }"
+    @click.window="
+        if (!$wire.showSelector) return;
+        if ($el.contains($event.target)) return;
+        if ($event.target.closest && $event.target.closest('[data-dropdown-owner=\'' + ownerId + '\']')) return;
+        $wire.toggleSelector();
+    "
+    @keydown.escape.window="if ($wire.showSelector) $wire.toggleSelector()"
 >
     @if($currentRecipe)
         <!-- Recepta assignada -->
