@@ -37,7 +37,7 @@
     <!-- Mobile: Vertical card layout -->
     <div class="flex flex-col gap-4 lg:hidden">
         @foreach($weekDays as $day)
-            <div id="day-{{ $day->format('Y-m-d') }}" class="bg-white border border-stone-200 rounded-lg overflow-visible {{ $day->isToday() ? 'ring-2 ring-forest-200' : '' }}">
+            <div id="day-{{ $day->format('Y-m-d') }}" class="scroll-mt-20 bg-white border border-stone-200 rounded-lg overflow-visible {{ $day->isToday() ? 'ring-2 ring-forest-200' : '' }}">
                 <!-- Day header -->
                 <div class="px-4 py-3 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
                     <div>
