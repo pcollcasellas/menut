@@ -18,7 +18,7 @@ class MealSlotTest extends TestCase
     public function test_can_select_recipe_for_meal_slot(): void
     {
         $user = User::factory()->create();
-        $recipe = Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pasta Carbonara']);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pasta Carbonara']);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -26,7 +26,7 @@ class MealSlotTest extends TestCase
         Livewire::test(MealSlot::class, ['date' => $date, 'mealType' => 'lunch'])
             ->call('selectRecipe', $recipe->id);
 
-        $menuItem = MenuItem::where('user_id', $user->id)
+        $menuItem = MenuItem::where('household_id', $user->household_id)
             ->whereDate('date', $date)
             ->where('meal_type', 'lunch')
             ->first();
@@ -38,10 +38,11 @@ class MealSlotTest extends TestCase
     public function test_can_remove_recipe_from_meal_slot(): void
     {
         $user = User::factory()->create();
-        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id]);
         $date = Carbon::now()->format('Y-m-d');
 
         MenuItem::create([
+            'household_id' => $user->household_id,
             'user_id' => $user->id,
             'date' => $date,
             'meal_type' => 'lunch',
@@ -54,7 +55,7 @@ class MealSlotTest extends TestCase
             ->call('selectRecipe', null);
 
         $this->assertDatabaseMissing('menu_items', [
-            'user_id' => $user->id,
+            'household_id' => $user->household_id,
             'date' => $date,
             'meal_type' => 'lunch',
         ]);
@@ -63,11 +64,12 @@ class MealSlotTest extends TestCase
     public function test_can_replace_recipe_in_meal_slot(): void
     {
         $user = User::factory()->create();
-        $recipeA = Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Recipe A']);
-        $recipeB = Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Recipe B']);
+        $recipeA = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Recipe A']);
+        $recipeB = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Recipe B']);
         $date = Carbon::now()->format('Y-m-d');
 
         MenuItem::create([
+            'household_id' => $user->household_id,
             'user_id' => $user->id,
             'date' => $date,
             'meal_type' => 'lunch',
@@ -79,7 +81,7 @@ class MealSlotTest extends TestCase
         Livewire::test(MealSlot::class, ['date' => $date, 'mealType' => 'lunch'])
             ->call('selectRecipe', $recipeB->id);
 
-        $menuItem = MenuItem::where('user_id', $user->id)
+        $menuItem = MenuItem::where('household_id', $user->household_id)
             ->whereDate('date', $date)
             ->where('meal_type', 'lunch')
             ->first();
@@ -87,7 +89,7 @@ class MealSlotTest extends TestCase
         $this->assertNotNull($menuItem);
         $this->assertEquals($recipeB->id, $menuItem->recipe_id);
 
-        $this->assertEquals(1, MenuItem::where('user_id', $user->id)
+        $this->assertEquals(1, MenuItem::where('household_id', $user->household_id)
             ->whereDate('date', $date)
             ->where('meal_type', 'lunch')
             ->count());
@@ -111,9 +113,9 @@ class MealSlotTest extends TestCase
     public function test_search_filters_recipes_by_name(): void
     {
         $user = User::factory()->create();
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pasta Carbonara']);
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pizza Margherita']);
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Chicken Curry']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pasta Carbonara']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pizza Margherita']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Chicken Curry']);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -129,8 +131,8 @@ class MealSlotTest extends TestCase
     public function test_search_is_case_insensitive(): void
     {
         $user = User::factory()->create();
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pasta Carbonara']);
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pizza Margherita']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pasta Carbonara']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pizza Margherita']);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -146,9 +148,9 @@ class MealSlotTest extends TestCase
     public function test_search_returns_partial_matches(): void
     {
         $user = User::factory()->create();
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pasta Carbonara']);
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pasta Bolognese']);
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pizza Margherita']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pasta Carbonara']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pasta Bolognese']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pizza Margherita']);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -164,8 +166,8 @@ class MealSlotTest extends TestCase
     public function test_search_returns_empty_when_no_matches(): void
     {
         $user = User::factory()->create();
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pasta Carbonara']);
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pizza Margherita']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pasta Carbonara']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pizza Margherita']);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -195,7 +197,7 @@ class MealSlotTest extends TestCase
     public function test_search_query_clears_when_selecting_recipe(): void
     {
         $user = User::factory()->create();
-        $recipe = Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Pasta Carbonara']);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Pasta Carbonara']);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -226,12 +228,28 @@ class MealSlotTest extends TestCase
             ->assertSet('searchQuery', '');
     }
 
-    public function test_user_can_only_see_own_recipes_in_selector(): void
+    public function test_same_household_users_see_same_recipes(): void
+    {
+        $userA = User::factory()->create();
+        $userB = User::factory()->create(['household_id' => $userA->household_id]);
+        Recipe::factory()->create(['user_id' => $userA->id, 'household_id' => $userA->household_id, 'name' => 'Shared Recipe']);
+        $date = Carbon::now()->format('Y-m-d');
+
+        $this->actingAs($userB);
+
+        $component = Livewire::test(MealSlot::class, ['date' => $date, 'mealType' => 'lunch']);
+
+        $recipes = $component->viewData('recipes');
+        $this->assertEquals(1, $recipes->count());
+        $this->assertEquals('Shared Recipe', $recipes->first()->name);
+    }
+
+    public function test_different_household_users_cannot_see_each_others_recipes(): void
     {
         $userA = User::factory()->create();
         $userB = User::factory()->create();
-        Recipe::factory()->create(['user_id' => $userA->id, 'name' => 'User A Recipe']);
-        Recipe::factory()->create(['user_id' => $userB->id, 'name' => 'User B Recipe']);
+        Recipe::factory()->create(['user_id' => $userA->id, 'household_id' => $userA->household_id, 'name' => 'User A Recipe']);
+        Recipe::factory()->create(['user_id' => $userB->id, 'household_id' => $userB->household_id, 'name' => 'User B Recipe']);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($userA);
@@ -246,7 +264,7 @@ class MealSlotTest extends TestCase
     public function test_selecting_recipe_dispatches_menu_updated_event(): void
     {
         $user = User::factory()->create();
-        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id]);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -259,7 +277,7 @@ class MealSlotTest extends TestCase
     public function test_selecting_recipe_closes_selector(): void
     {
         $user = User::factory()->create();
-        $recipe = Recipe::factory()->create(['user_id' => $user->id]);
+        $recipe = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id]);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -273,9 +291,9 @@ class MealSlotTest extends TestCase
     public function test_recipes_are_sorted_alphabetically(): void
     {
         $user = User::factory()->create();
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Zebra Steak']);
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Apple Pie']);
-        Recipe::factory()->create(['user_id' => $user->id, 'name' => 'Mango Salad']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Zebra Steak']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Apple Pie']);
+        Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id, 'name' => 'Mango Salad']);
         $date = Carbon::now()->format('Y-m-d');
 
         $this->actingAs($user);
@@ -290,11 +308,12 @@ class MealSlotTest extends TestCase
     public function test_refresh_from_menu_updates_selected_recipe(): void
     {
         $user = User::factory()->create();
-        $recipeA = Recipe::factory()->create(['user_id' => $user->id]);
-        $recipeB = Recipe::factory()->create(['user_id' => $user->id]);
+        $recipeA = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id]);
+        $recipeB = Recipe::factory()->create(['user_id' => $user->id, 'household_id' => $user->household_id]);
         $date = Carbon::now()->format('Y-m-d');
 
         MenuItem::create([
+            'household_id' => $user->household_id,
             'user_id' => $user->id,
             'date' => $date,
             'meal_type' => 'lunch',
@@ -306,7 +325,7 @@ class MealSlotTest extends TestCase
         $component = Livewire::test(MealSlot::class, ['date' => $date, 'mealType' => 'lunch'])
             ->assertSet('selectedRecipeId', $recipeA->id);
 
-        MenuItem::where('user_id', $user->id)
+        MenuItem::where('household_id', $user->household_id)
             ->whereDate('date', $date)
             ->where('meal_type', 'lunch')
             ->update(['recipe_id' => $recipeB->id]);

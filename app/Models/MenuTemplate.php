@@ -9,9 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class MenuTemplate extends Model
 {
     protected $fillable = [
+        'household_id',
         'user_id',
         'name',
     ];
+
+    public function household(): BelongsTo
+    {
+        return $this->belongsTo(Household::class);
+    }
 
     public function user(): BelongsTo
     {

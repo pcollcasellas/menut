@@ -1,6 +1,8 @@
 <?php
 
 use App\Livewire\Actions\Logout;
+use App\Models\Household;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
 
@@ -17,7 +19,20 @@ new class extends Component
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        $user = Auth::user();
+        $householdId = $user->household_id;
+        $remainingMembers = User::where('household_id', $householdId)
+            ->where('id', '!=', $user->id)
+            ->count();
+
+        $logout();
+
+        $user->delete();
+
+        // If no other members remain, delete the empty household
+        if ($remainingMembers === 0) {
+            Household::find($householdId)?->delete();
+        }
 
         $this->redirect('/', navigate: true);
     }

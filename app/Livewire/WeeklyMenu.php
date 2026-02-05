@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\MenuItem;
 use Carbon\Carbon;
 use Livewire\Attributes\On;
@@ -9,6 +10,8 @@ use Livewire\Component;
 
 class WeeklyMenu extends Component
 {
+    use BelongsToHousehold;
+
     public string $currentWeekStart;
 
     public function mount(): void
@@ -64,7 +67,7 @@ class WeeklyMenu extends Component
         $end = $start->copy()->addDays(6);
 
         $items = MenuItem::with('recipe')
-            ->where('user_id', auth()->id())
+            ->where('household_id', $this->householdId())
             ->whereBetween('date', [$start, $end])
             ->get();
 

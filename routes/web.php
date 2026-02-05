@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HouseholdInvitationController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -15,5 +16,17 @@ Route::view('recipes', 'recipes')
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
+
+Route::view('household', 'household')
+    ->middleware(['auth'])
+    ->name('household');
+
+Route::get('household/invitation/{token}', [HouseholdInvitationController::class, 'show'])
+    ->middleware(['auth'])
+    ->name('household.invitation.show');
+
+Route::post('household/invitation/{token}/accept', [HouseholdInvitationController::class, 'accept'])
+    ->middleware(['auth'])
+    ->name('household.invitation.accept');
 
 require __DIR__.'/auth.php';

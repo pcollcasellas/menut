@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\MenuItem;
 use App\Models\Recipe;
 use Livewire\Attributes\On;
@@ -9,6 +10,8 @@ use Livewire\Component;
 
 class MealSlot extends Component
 {
+    use BelongsToHousehold;
+
     public string $date;
 
     public string $mealType;
@@ -32,7 +35,7 @@ class MealSlot extends Component
     #[On('menu-updated')]
     public function refreshFromMenu(): void
     {
-        $menuItem = MenuItem::where('user_id', auth()->id())
+        $menuItem = MenuItem::where('household_id', $this->householdId())
             ->whereDate('date', $this->date)
             ->where('meal_type', $this->mealType)
             ->first();
@@ -70,13 +73,13 @@ class MealSlot extends Component
     public function selectRecipe(?int $recipeId): void
     {
         if ($recipeId === null) {
-            MenuItem::where('user_id', auth()->id())
+            MenuItem::where('household_id', $this->householdId())
                 ->whereDate('date', $this->date)
                 ->where('meal_type', $this->mealType)
                 ->delete();
             $this->selectedRecipeId = null;
         } else {
-            $existing = MenuItem::where('user_id', auth()->id())
+            $existing = MenuItem::where('household_id', $this->householdId())
                 ->whereDate('date', $this->date)
                 ->where('meal_type', $this->mealType)
                 ->first();
@@ -85,6 +88,7 @@ class MealSlot extends Component
                 $existing->update(['recipe_id' => $recipeId]);
             } else {
                 MenuItem::create([
+                    'household_id' => $this->householdId(),
                     'user_id' => auth()->id(),
                     'date' => $this->date,
                     'meal_type' => $this->mealType,
@@ -110,10 +114,10 @@ class MealSlot extends Component
 
     public function render()
     {
-        $recipesQuery = Recipe::where('user_id', auth()->id());
+        $recipesQuery = Recipe::where('household_id', $this->householdId());
 
         if (trim($this->searchQuery) !== '') {
-            $recipesQuery->where('name', 'like', '%' . $this->searchQuery . '%');
+            $recipesQuery->where('name', 'like', '%'.$this->searchQuery.'%');
         }
 
         return view('livewire.meal-slot', [

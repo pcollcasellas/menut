@@ -14,6 +14,7 @@ class RecipeFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
+            'household_id' => fn (array $attributes) => User::find($attributes['user_id'])->household_id,
             'name' => fake()->words(3, true),
             'description' => fake()->sentence(),
             'ingredients' => fake()->paragraph(),
