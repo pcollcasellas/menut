@@ -36,13 +36,62 @@
                 </div>
 
                 <div>
-                    <flux:textarea
-                        wire:model="ingredients"
-                        label="Ingredients"
-                        name="ingredients"
-                        placeholder="Un ingredient per línia"
-                        rows="4"
-                    />
+                    <flux:label>Ingredients</flux:label>
+
+                    {{-- Selected ingredients as tags --}}
+                    @if(count($selectedIngredients) > 0)
+                        <div class="flex flex-wrap gap-2 mb-2 mt-1">
+                            @foreach($selectedIngredients as $index => $ingredient)
+                                <span class="inline-flex items-center gap-1 px-3 py-1 bg-forest-100 text-forest-800 rounded-full text-sm">
+                                    {{ $ingredient }}
+                                    <button
+                                        type="button"
+                                        wire:click="removeIngredient({{ $index }})"
+                                        class="ml-1 text-forest-600 hover:text-forest-800 focus:outline-none"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </span>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{-- Input with autocomplete --}}
+                    <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                        <flux:input
+                            wire:model.live.debounce.300ms="ingredientSearch"
+                            wire:keydown.enter.prevent="addIngredient"
+                            placeholder="Escriu un ingredient i prem Enter..."
+                            @focus="open = true"
+                            @input="open = true"
+                            autocomplete="off"
+                        />
+
+                        {{-- Autocomplete suggestions --}}
+                        @if(count($this->ingredientSuggestions) > 0)
+                            <div
+                                x-show="open"
+                                x-cloak
+                                class="absolute z-10 w-full mt-1 bg-white border border-stone-200 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+                            >
+                                @foreach($this->ingredientSuggestions as $suggestion)
+                                    <button
+                                        type="button"
+                                        wire:click="selectSuggestion('{{ addslashes($suggestion) }}')"
+                                        class="w-full px-4 py-2 text-left text-sm hover:bg-cream-100 focus:bg-cream-100 focus:outline-none transition-colors"
+                                    >
+                                        {{ $suggestion }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <flux:text size="xs" class="text-stone-500 mt-1">
+                        Escriu i prem Enter per afegir. Les suggerències apareixeran dels ingredients existents.
+                    </flux:text>
                 </div>
 
                 <div>
@@ -86,6 +135,20 @@
                                 <flux:text class="font-medium text-stone-800">{{ $recipe->name }}</flux:text>
                                 @if($recipe->description)
                                     <flux:text size="sm" class="text-stone-500 truncate mt-0.5">{{ $recipe->description }}</flux:text>
+                                @endif
+                                @if($recipe->ingredientItems->count() > 0)
+                                    <div class="flex flex-wrap gap-1 mt-1">
+                                        @foreach($recipe->ingredientItems->take(5) as $ingredient)
+                                            <span class="inline-flex px-2 py-0.5 bg-cream-100 text-bark-600 rounded-full text-xs">
+                                                {{ $ingredient->name }}
+                                            </span>
+                                        @endforeach
+                                        @if($recipe->ingredientItems->count() > 5)
+                                            <span class="inline-flex px-2 py-0.5 bg-stone-100 text-stone-500 rounded-full text-xs">
+                                                +{{ $recipe->ingredientItems->count() - 5 }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 @endif
                             </div>
                             <div class="flex items-center gap-1 ml-4">

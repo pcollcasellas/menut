@@ -8,8 +8,8 @@
         <title>{{ config('app.name', 'Menut') }}</title>
 
         <!-- Favicon -->
-        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/menut-logo.png') }}">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/menut-logo.png') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/menut-favicon.png') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/menut-favicon.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
