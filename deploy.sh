@@ -3,6 +3,9 @@ set -e
 
 cd /var/www/menut
 
+# Mark directory as safe for git
+git config --global --add safe.directory /var/www/menut
+
 # Pull latest changes
 git fetch origin main
 git reset --hard origin/main
