@@ -13,6 +13,10 @@ Route::view('recipes', 'recipes')
     ->middleware(['auth'])
     ->name('recipes');
 
+Route::view('shopping-list', 'shopping-list')
+    ->middleware(['auth'])
+    ->name('shopping-list');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');

@@ -33,4 +33,14 @@ class Household extends Model
     {
         return $this->hasMany(MenuTemplate::class);
     }
+
+    public function ingredients(): HasMany
+    {
+        return $this->hasMany(Ingredient::class);
+    }
+
+    public function shoppingListItems(): HasMany
+    {
+        return $this->hasMany(ShoppingListItem::class);
+    }
 }
