@@ -15,11 +15,4 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            # Fix permissions first so we can pull and run commands
-            sudo chown -R $USER:www-data /var/www/menut
-            sudo chmod -R 775 /var/www/menut/storage
-            sudo chmod -R 775 /var/www/menut/bootstrap/cache
-            
-            # Now run the deploy script
-            /var/www/menut/deploy.sh
+          script: /var/www/menut/deploy.sh
