@@ -7,8 +7,8 @@
         <title>Menut - Organitzador de Menús Setmanals</title>
 
         <!-- Favicon -->
-        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/menut-logo.png') }}">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/menut-logo.png') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/menut-favicon.png') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/menut-favicon.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -23,7 +23,7 @@
                 <div class="relative w-full max-w-2xl px-6 lg:max-w-4xl">
                     <header class="flex items-center justify-between py-10">
                         <div class="flex items-center gap-3">
-                            <img src="{{ asset('images/menut-logo.png') }}" alt="Menut" class="w-20 h-20 object-contain">
+                            <img src="{{ asset('images/menut-favicon.png') }}" alt="Menut" class="w-20 h-20 object-contain">
                             <h1 class="text-2xl font-display text-bark-800">Menut</h1>
                         </div>
                         @if (Route::has('login'))

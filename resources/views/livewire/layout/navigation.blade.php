@@ -24,7 +24,7 @@ new class extends Component
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-2">
-                        <img src="{{ asset('images/menut-logo.png') }}" alt="Menut" class="w-14 h-14 object-contain">
+                        <img src="{{ asset('images/menut-favicon.png') }}" alt="Menut" class="w-14 h-14 object-contain">
                         <span class="font-display text-lg text-bark-800">Menut</span>
                     </a>
                 </div>
@@ -33,6 +33,9 @@ new class extends Component
                 <div class="hidden space-x-1 sm:-my-px sm:ms-8 sm:flex">
                     <a href="{{ route('dashboard') }}" wire:navigate class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-colors {{ request()->routeIs('dashboard') ? 'text-forest-700 bg-forest-50' : 'text-bark-600 hover:text-bark-800 hover:bg-cream-100' }}">
                         Menú Setmanal
+                    </a>
+                    <a href="{{ route('shopping-list') }}" wire:navigate class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-colors {{ request()->routeIs('shopping-list') ? 'text-forest-700 bg-forest-50' : 'text-bark-600 hover:text-bark-800 hover:bg-cream-100' }}">
+                        Llista de la Compra
                     </a>
                     <a href="{{ route('recipes') }}" wire:navigate class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-colors {{ request()->routeIs('recipes') ? 'text-forest-700 bg-forest-50' : 'text-bark-600 hover:text-bark-800 hover:bg-cream-100' }}">
                         Receptes
@@ -91,6 +94,9 @@ new class extends Component
         <div class="pt-2 pb-3 space-y-1 px-4">
             <a href="{{ route('dashboard') }}" wire:navigate class="block px-3 py-2 text-base font-medium rounded-xl {{ request()->routeIs('dashboard') ? 'text-forest-700 bg-forest-50' : 'text-bark-600 hover:text-bark-800 hover:bg-cream-100' }}">
                 Menú Setmanal
+            </a>
+            <a href="{{ route('shopping-list') }}" wire:navigate class="block px-3 py-2 text-base font-medium rounded-xl {{ request()->routeIs('shopping-list') ? 'text-forest-700 bg-forest-50' : 'text-bark-600 hover:text-bark-800 hover:bg-cream-100' }}">
+                Llista de la Compra
             </a>
             <a href="{{ route('recipes') }}" wire:navigate class="block px-3 py-2 text-base font-medium rounded-xl {{ request()->routeIs('recipes') ? 'text-forest-700 bg-forest-50' : 'text-bark-600 hover:text-bark-800 hover:bg-cream-100' }}">
                 Receptes
