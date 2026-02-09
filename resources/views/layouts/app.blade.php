@@ -7,9 +7,23 @@
 
         <title>{{ config('app.name', 'Menut') }}</title>
 
-        <!-- Favicon -->
-        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/menut-favicon.png') }}">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/menut-favicon.png') }}">
+        <!-- PWA Meta Tags -->
+        <meta name="theme-color" content="#536b3c">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="Menut">
+        <meta name="application-name" content="Menut">
+        <meta name="msapplication-TileColor" content="#536b3c">
+        <meta name="msapplication-TileImage" content="{{ asset('images/icons/icon-144x144.png') }}">
+
+        <!-- Web App Manifest -->
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
+
+        <!-- Favicon & Icons -->
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/icons/icon-96x96.png') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/icons/icon-192x192.png') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/icon-192x192.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
