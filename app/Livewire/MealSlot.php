@@ -109,7 +109,7 @@ class MealSlot extends Component
             return null;
         }
 
-        return Recipe::find($this->selectedRecipeId);
+        return Recipe::with('ingredientItems')->find($this->selectedRecipeId);
     }
 
     public function render()
