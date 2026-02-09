@@ -5,6 +5,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
+// PWA offline fallback page
+Route::view('offline', 'offline')->name('offline');
+
+// Menu route (PWA start URL - redirects to dashboard)
+Route::redirect('menu', 'dashboard')->name('menu');
+
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
