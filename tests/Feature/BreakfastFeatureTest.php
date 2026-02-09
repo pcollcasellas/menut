@@ -113,9 +113,40 @@ class BreakfastFeatureTest extends TestCase
             ->assertSet('recipeType', 'meal');
     }
 
-    public function test_recipe_manager_can_switch_between_tabs(): void
+    public function test_recipe_manager_does_not_show_breakfast_tab_when_disabled(): void
     {
         $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(RecipeManager::class)
+            ->assertDontSee('Esmorzar');
+    }
+
+    public function test_recipe_manager_shows_breakfast_tab_when_enabled(): void
+    {
+        $user = User::factory()->withBreakfast()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(RecipeManager::class)
+            ->assertSee('Esmorzar');
+    }
+
+    public function test_recipe_manager_redirects_to_meal_when_breakfast_disabled_in_url(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        // Even if URL has breakfast, it should redirect to meal since breakfast is disabled
+        Livewire::test(RecipeManager::class, ['recipeType' => 'breakfast'])
+            ->assertSet('recipeType', 'meal');
+    }
+
+    public function test_recipe_manager_can_switch_between_tabs(): void
+    {
+        $user = User::factory()->withBreakfast()->create();
 
         $this->actingAs($user);
 
@@ -129,7 +160,7 @@ class BreakfastFeatureTest extends TestCase
 
     public function test_recipe_manager_filters_recipes_by_type(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withBreakfast()->create();
 
         $mealRecipe = Recipe::factory()->create([
             'user_id' => $user->id,
@@ -161,7 +192,7 @@ class BreakfastFeatureTest extends TestCase
 
     public function test_recipe_manager_creates_recipe_with_current_type(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->withBreakfast()->create();
 
         $this->actingAs($user);
 

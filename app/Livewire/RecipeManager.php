@@ -19,6 +19,14 @@ class RecipeManager extends Component
 
     public bool $showForm = false;
 
+    public function mount(): void
+    {
+        // If user has breakfast disabled but is trying to view breakfast recipes, redirect to meal
+        if ($this->recipeType === 'breakfast' && ! (auth()->user()->show_breakfast ?? false)) {
+            $this->recipeType = 'meal';
+        }
+    }
+
     public ?int $editingId = null;
 
     public string $name = '';
@@ -202,6 +210,18 @@ class RecipeManager extends Component
         return RecipeType::from($this->recipeType);
     }
 
+    #[Computed]
+    public function availableRecipeTypes(): array
+    {
+        $types = [RecipeType::Meal];
+
+        if (auth()->user()->show_breakfast ?? false) {
+            array_unshift($types, RecipeType::Breakfast);
+        }
+
+        return $types;
+    }
+
     public function render()
     {
         return view('livewire.recipe-manager', [
@@ -210,7 +230,7 @@ class RecipeManager extends Component
                 ->with('ingredientItems')
                 ->orderBy('name')
                 ->get(),
-            'recipeTypes' => RecipeType::cases(),
+            'recipeTypes' => $this->availableRecipeTypes,
         ]);
     }
 }
