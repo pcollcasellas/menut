@@ -2,9 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Enums\MealType;
 use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\MenuItem;
 use Carbon\Carbon;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -17,6 +19,27 @@ class WeeklyMenu extends Component
     public function mount(): void
     {
         $this->currentWeekStart = Carbon::now()->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
+    }
+
+    #[Computed]
+    public function showBreakfast(): bool
+    {
+        return auth()->user()->show_breakfast ?? false;
+    }
+
+    #[Computed]
+    public function mealTypes(): array
+    {
+        $types = [];
+
+        if ($this->showBreakfast) {
+            $types[] = MealType::Breakfast;
+        }
+
+        $types[] = MealType::Lunch;
+        $types[] = MealType::Dinner;
+
+        return $types;
     }
 
     public function previousWeek(): void
@@ -73,7 +96,7 @@ class WeeklyMenu extends Component
 
         $menuByDay = [];
         foreach ($items as $item) {
-            $key = $item->date->format('Y-m-d').'_'.$item->meal_type;
+            $key = $item->date->format('Y-m-d').'_'.$item->meal_type->value;
             $menuByDay[$key] = $item;
         }
 

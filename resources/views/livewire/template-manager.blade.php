@@ -98,7 +98,6 @@
 
                                     @php
                                         $previewDays = ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'];
-                                        $previewMealTypes = ['lunch' => 'Dinar', 'dinner' => 'Sopar'];
                                     @endphp
                                     <div class="hidden md:block mt-3">
                                         <table class="w-full border-collapse text-[10px] text-emerald-900">
@@ -111,12 +110,12 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($previewMealTypes as $mealType => $mealLabel)
+                                                @foreach($this->mealTypes as $mealType)
                                                     <tr>
-                                                        <td class="p-1 font-medium text-emerald-700">{{ $mealLabel }}</td>
+                                                        <td class="p-1 font-medium text-emerald-700">{{ $mealType->label() }}</td>
                                                         @for($day = 0; $day < 7; $day++)
                                                             @php
-                                                                $previewName = $selectedTemplatePreview[$day][$mealType] ?? null;
+                                                                $previewName = $selectedTemplatePreview[$day][$mealType->value] ?? null;
                                                             @endphp
                                                             <td class="p-1 align-top">
                                                                 <div class="min-h-[18px] rounded bg-white/70 px-1 text-emerald-900 line-clamp-2">
@@ -166,7 +165,6 @@
                             <!-- Grid editor -->
                             @php
                                 $days = ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'];
-                                $mealTypes = ['lunch' => 'Dinar', 'dinner' => 'Sopar'];
                             @endphp
 
                             <div class="overflow-x-auto -mx-6 px-6 sm:mx-0 sm:px-0">
@@ -180,12 +178,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($mealTypes as $mealType => $mealLabel)
+                                        @foreach($this->mealTypes as $mealType)
                                             <tr>
-                                                <td class="p-2 text-xs font-medium text-stone-600">{{ $mealLabel }}</td>
+                                                <td class="p-2 text-xs font-medium text-stone-600">{{ $mealType->label() }}</td>
                                                 @for($day = 0; $day < 7; $day++)
                                                     @php
-                                                        $slotKey = "{$day}_{$mealType}";
+                                                        $slotKey = "{$day}_{$mealType->value}";
                                                         $recipeId = $editingSlots[$slotKey] ?? null;
                                                         $recipe = $recipeId ? $recipes->firstWhere('id', $recipeId) : null;
                                                     @endphp

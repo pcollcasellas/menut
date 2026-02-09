@@ -53,27 +53,18 @@
                     @endif
                 </div>
 
-                <!-- Meals grid (lunch | dinner) -->
-                <div class="grid grid-cols-2 divide-x divide-stone-200 overflow-visible">
-                    <!-- Lunch -->
-                    <div class="p-4 overflow-visible {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
-                        <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">Dinar</flux:text>
-                        <livewire:meal-slot
-                            :date="$day->format('Y-m-d')"
-                            :mealType="'lunch'"
-                            :key="'mobile-lunch-'.$day->format('Y-m-d')"
-                        />
-                    </div>
-
-                    <!-- Dinner -->
-                    <div class="p-4 overflow-visible {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
-                        <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">Sopar</flux:text>
-                        <livewire:meal-slot
-                            :date="$day->format('Y-m-d')"
-                            :mealType="'dinner'"
-                            :key="'mobile-dinner-'.$day->format('Y-m-d')"
-                        />
-                    </div>
+                <!-- Meals grid -->
+                <div class="grid grid-cols-{{ count($this->mealTypes) }} divide-x divide-stone-200 overflow-visible">
+                    @foreach($this->mealTypes as $mealType)
+                        <div class="p-4 overflow-visible {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
+                            <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">{{ $mealType->label() }}</flux:text>
+                            <livewire:meal-slot
+                                :date="$day->format('Y-m-d')"
+                                :mealType="$mealType->value"
+                                :key="'mobile-'.$mealType->value.'-'.$day->format('Y-m-d')"
+                            />
+                        </div>
+                    @endforeach
                 </div>
 
                 <div id="day-dropdown-{{ $day->format('Y-m-d') }}" class="mt-2 lg:hidden"></div>
@@ -96,28 +87,18 @@
                 </div>
             @endforeach
 
-            <!-- Files de Dinar -->
-            @foreach($weekDays as $day)
-                <div class="min-h-[100px] overflow-visible {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
-                    <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">Dinar</flux:text>
-                    <livewire:meal-slot
-                        :date="$day->format('Y-m-d')"
-                        :mealType="'lunch'"
-                        :key="'desktop-lunch-'.$day->format('Y-m-d')"
-                    />
-                </div>
-            @endforeach
-
-            <!-- Files de Sopar -->
-            @foreach($weekDays as $day)
-                <div class="min-h-[100px] overflow-visible {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
-                    <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">Sopar</flux:text>
-                    <livewire:meal-slot
-                        :date="$day->format('Y-m-d')"
-                        :mealType="'dinner'"
-                        :key="'desktop-dinner-'.$day->format('Y-m-d')"
-                    />
-                </div>
+            <!-- Meal type rows -->
+            @foreach($this->mealTypes as $mealType)
+                @foreach($weekDays as $day)
+                    <div class="min-h-[100px] overflow-visible {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
+                        <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">{{ $mealType->label() }}</flux:text>
+                        <livewire:meal-slot
+                            :date="$day->format('Y-m-d')"
+                            :mealType="$mealType->value"
+                            :key="'desktop-'.$mealType->value.'-'.$day->format('Y-m-d')"
+                        />
+                    </div>
+                @endforeach
             @endforeach
         </div>
     </div>

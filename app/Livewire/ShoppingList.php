@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Enums\MealType;
 use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\MenuItem;
 use App\Models\ShoppingListItem;
@@ -150,14 +151,14 @@ class ShoppingList extends Component
         $menuItems = $menuItems->filter(function ($item) use ($startDateObj, $endDateObj) {
             // If same date as start, check meal type
             if ($item->date->isSameDay($startDateObj)) {
-                if ($this->startMealType === 'dinner' && $item->meal_type === 'lunch') {
+                if ($this->startMealType === 'dinner' && $item->meal_type === MealType::Lunch) {
                     return false;
                 }
             }
 
             // If same date as end, check meal type
             if ($item->date->isSameDay($endDateObj)) {
-                if ($this->endMealType === 'lunch' && $item->meal_type === 'dinner') {
+                if ($this->endMealType === 'lunch' && $item->meal_type === MealType::Dinner) {
                     return false;
                 }
             }

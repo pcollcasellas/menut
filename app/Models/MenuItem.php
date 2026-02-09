@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MealType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,9 +16,13 @@ class MenuItem extends Model
         'recipe_id',
     ];
 
-    protected $casts = [
-        'date' => 'date',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date',
+            'meal_type' => MealType::class,
+        ];
+    }
 
     public function household(): BelongsTo
     {

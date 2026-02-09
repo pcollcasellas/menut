@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\RecipeType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +21,42 @@ class Recipe extends Model
         'description',
         'ingredients',
         'instructions',
+        'type',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'type' => RecipeType::class,
+        ];
+    }
+
+    /**
+     * @param  Builder<Recipe>  $query
+     * @return Builder<Recipe>
+     */
+    public function scopeBreakfast(Builder $query): Builder
+    {
+        return $query->where('type', RecipeType::Breakfast);
+    }
+
+    /**
+     * @param  Builder<Recipe>  $query
+     * @return Builder<Recipe>
+     */
+    public function scopeMeal(Builder $query): Builder
+    {
+        return $query->where('type', RecipeType::Meal);
+    }
+
+    /**
+     * @param  Builder<Recipe>  $query
+     * @return Builder<Recipe>
+     */
+    public function scopeOfType(Builder $query, RecipeType $type): Builder
+    {
+        return $query->where('type', $type);
+    }
 
     public function household(): BelongsTo
     {

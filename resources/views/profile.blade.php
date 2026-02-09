@@ -15,6 +15,12 @@
 
             <div class="p-4 sm:p-8 bg-white border border-cream-200 shadow-soft rounded-2xl">
                 <div class="max-w-xl">
+                    <livewire:profile.menu-settings-form />
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-8 bg-white border border-cream-200 shadow-soft rounded-2xl">
+                <div class="max-w-xl">
                     <livewire:profile.update-password-form />
                 </div>
             </div>

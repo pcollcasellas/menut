@@ -2,12 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Enums\MealType;
 use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\MenuItem;
 use App\Models\MenuTemplate;
 use App\Models\MenuTemplateItem;
 use App\Models\Recipe;
 use Carbon\Carbon;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -47,6 +49,21 @@ class TemplateManager extends Component
         }
 
         return $rules;
+    }
+
+    #[Computed]
+    public function mealTypes(): array
+    {
+        $types = [];
+
+        if (auth()->user()->show_breakfast ?? false) {
+            $types[] = MealType::Breakfast;
+        }
+
+        $types[] = MealType::Lunch;
+        $types[] = MealType::Dinner;
+
+        return $types;
     }
 
     #[On('open-template-manager')]
@@ -102,14 +119,14 @@ class TemplateManager extends Component
         // Initialize all slots as empty
         $this->editingSlots = [];
         for ($day = 0; $day < 7; $day++) {
-            foreach (['lunch', 'dinner'] as $mealType) {
-                $this->editingSlots["{$day}_{$mealType}"] = null;
+            foreach ($this->mealTypes as $mealType) {
+                $this->editingSlots["{$day}_{$mealType->value}"] = null;
             }
         }
 
         // Fill in existing items
         foreach ($template->items as $item) {
-            $key = "{$item->day_of_week}_{$item->meal_type}";
+            $key = "{$item->day_of_week}_{$item->meal_type->value}";
             $this->editingSlots[$key] = $item->recipe_id;
         }
 
@@ -183,7 +200,7 @@ class TemplateManager extends Component
         for ($i = 0; $i < 7; $i++) {
             $date = $start->copy()->addDays($i);
 
-            foreach (['lunch', 'dinner'] as $mealType) {
+            foreach ($this->mealTypes as $mealType) {
                 $menuItem = MenuItem::where('household_id', $this->householdId())
                     ->whereDate('date', $date)
                     ->where('meal_type', $mealType)
@@ -243,7 +260,7 @@ class TemplateManager extends Component
                     'household_id' => $this->householdId(),
                     'user_id' => auth()->id(),
                     'date' => $date,
-                    'meal_type' => $item->meal_type,
+                    'meal_type' => $item->meal_type->value,
                     'recipe_id' => $item->recipe_id,
                 ]);
             }
@@ -281,10 +298,10 @@ class TemplateManager extends Component
     {
         $preview = [];
         for ($day = 0; $day < 7; $day++) {
-            $preview[$day] = [
-                'lunch' => null,
-                'dinner' => null,
-            ];
+            $preview[$day] = [];
+            foreach ($this->mealTypes as $mealType) {
+                $preview[$day][$mealType->value] = null;
+            }
         }
 
         $template = $this->getSelectedTemplate();
@@ -297,7 +314,7 @@ class TemplateManager extends Component
                 continue;
             }
 
-            $preview[$item->day_of_week][$item->meal_type] = $item->recipe->name;
+            $preview[$item->day_of_week][$item->meal_type->value] = $item->recipe->name;
         }
 
         return $preview;
