@@ -74,7 +74,15 @@ class WeeklyMenu extends Component
 
     public function getWeekDays(): array
     {
-        $start = Carbon::parse($this->currentWeekStart);
+        return $this->getWeekDaysFor($this->currentWeekStart);
+    }
+
+    /**
+     * @return array<int, Carbon>
+     */
+    private function getWeekDaysFor(string $weekStart): array
+    {
+        $start = Carbon::parse($weekStart);
         $days = [];
 
         for ($i = 0; $i < 7; $i++) {
