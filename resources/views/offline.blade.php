@@ -63,6 +63,33 @@
     </svg>
     <h1>Sense connexió</h1>
     <p>No s'ha pogut connectar. Comprova la teva connexió a internet i torna-ho a provar.</p>
-    <button class="retry-btn" onclick="window.location.reload()">Tornar a provar</button>
+    <button class="retry-btn" id="retry-btn">Tornar a provar</button>
+    <script>
+        // Manual reload
+        document.getElementById('retry-btn').addEventListener('click', () => {
+            window.location.reload();
+        });
+        // Auto-reload when connectivity returns (fixes iOS PWA stuck on offline page)
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+        // Poll server when device reports online but fetch may still fail
+        async function checkNetworkAndReload() {
+            try {
+                const response = await fetch(window.location.href, {
+                    method: 'HEAD',
+                    cache: 'no-store'
+                });
+                if (response.status >= 200 && response.status < 500) {
+                    window.location.reload();
+                    return;
+                }
+            } catch (_) {
+                // Still offline, keep polling
+            }
+            setTimeout(checkNetworkAndReload, 2500);
+        }
+        checkNetworkAndReload();
+    </script>
 </body>
 </html>
