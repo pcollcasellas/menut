@@ -23,6 +23,10 @@ jobs:
             composer install --optimize-autoloader --no-dev
             npm ci
             npm run build
+            if [ -f /var/www/menut/database/database.sqlite ]; then
+              mkdir -p /var/www/menut/database/backups
+              sqlite3 /var/www/menut/database/database.sqlite ".backup /var/www/menut/database/backups/database-$(date +%Y%m%d-%H%M%S).sqlite"
+            fi
             php artisan migrate --force
             php artisan config:clear
             php artisan config:cache

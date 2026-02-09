@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'household_id',
+        'show_breakfast',
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'show_breakfast' => 'boolean',
         ];
     }
 

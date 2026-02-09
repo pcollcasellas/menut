@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MealType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -13,6 +14,13 @@ class MenuTemplateItem extends Model
         'day_of_week',
         'meal_type',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'meal_type' => MealType::class,
+        ];
+    }
 
     public function template(): BelongsTo
     {

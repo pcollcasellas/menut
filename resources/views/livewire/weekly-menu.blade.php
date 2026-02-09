@@ -1,4 +1,11 @@
 <div x-data="{
+    touchStartX: 0,
+    touchStartY: 0,
+    slideOffset: 0,
+    isSwiping: false,
+    isAnimating: false,
+    SWIPE_THRESHOLD: 60,
+    MAX_DRAG: 120,
     mounted() {
         if (window.innerWidth < 768) {
             const today = document.getElementById('day-{{ now()->format('Y-m-d') }}');
@@ -8,8 +15,65 @@
                 }, 100);
             }
         }
+    },
+    onTouchStart(e) {
+        if (this.isAnimating) return;
+        this.touchStartX = e.touches[0].clientX;
+        this.touchStartY = e.touches[0].clientY;
+        this.isSwiping = true;
+        this.slideOffset = 0;
+    },
+    onTouchMove(e) {
+        if (!this.isSwiping || this.isAnimating) return;
+        const deltaX = e.touches[0].clientX - this.touchStartX;
+        const deltaY = e.touches[0].clientY - this.touchStartY;
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+            e.preventDefault();
+            const capped = Math.max(-this.MAX_DRAG, Math.min(this.MAX_DRAG, -deltaX));
+            this.slideOffset = capped;
+        }
+    },
+    onTouchEnd(e) {
+        if (!this.isSwiping || this.isAnimating) return;
+        this.isSwiping = false;
+        const deltaX = e.changedTouches[0].clientX - this.touchStartX;
+        const deltaY = e.changedTouches[0].clientY - this.touchStartY;
+        if (Math.abs(deltaX) > this.SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
+            this.isAnimating = true;
+            const direction = deltaX > 0 ? 1 : -1;
+            this.slideOffset = direction * this.MAX_DRAG;
+            const goNext = deltaX > 0;
+            setTimeout(() => {
+                if (goNext) {
+                    $wire.nextWeek();
+                } else {
+                    $wire.previousWeek();
+                }
+                this.slideOffset = 0;
+                this.isAnimating = false;
+            }, 150);
+        } else {
+            this.slideOffset = 0;
+        }
     }
-}" x-init="mounted()">
+}" x-init="mounted()" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd($event)" @touchcancel="isSwiping = false; slideOffset = 0">
+    <div class="lg:overflow-visible overflow-x-hidden relative">
+        <!-- Swipe hints (visible during drag) -->
+        <div class="lg:hidden absolute inset-0 flex pointer-events-none z-0">
+            <div class="w-1/2 flex items-center justify-center bg-stone-100/80 transition-opacity duration-100"
+                 :style="slideOffset > 0 ? `opacity: ${Math.min(1, slideOffset / 80)}` : 'opacity: 0'">
+                <span class="text-sm font-medium text-stone-600">← Setmana anterior</span>
+            </div>
+            <div class="w-1/2 ml-auto flex items-center justify-center bg-stone-100/80 transition-opacity duration-100"
+                 :style="slideOffset < 0 ? `opacity: ${Math.min(1, -slideOffset / 80)}` : 'opacity: 0'">
+                <span class="text-sm font-medium text-stone-600">Setmana següent →</span>
+            </div>
+        </div>
+
+        <!-- Sliding content -->
+        <div class="relative z-10 bg-white lg:bg-transparent transition-transform ease-out"
+             :style="`transform: translateX(${slideOffset}px)`"
+             :class="isSwiping ? 'duration-0' : 'duration-150'">
     <!-- Header amb navegació de setmanes -->
     <div class="lg:sticky lg:top-16 z-20 bg-white pb-4 pt-2 -mt-2 mb-6">
         <div class="grid grid-cols-[auto_1fr_auto] items-center gap-2 sm:flex sm:gap-0 sm:items-center sm:justify-between">
@@ -53,27 +117,18 @@
                     @endif
                 </div>
 
-                <!-- Meals grid (lunch | dinner) -->
-                <div class="grid grid-cols-2 divide-x divide-stone-200 overflow-visible">
-                    <!-- Lunch -->
-                    <div class="p-4 overflow-visible {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
-                        <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">Dinar</flux:text>
-                        <livewire:meal-slot
-                            :date="$day->format('Y-m-d')"
-                            :mealType="'lunch'"
-                            :key="'mobile-lunch-'.$day->format('Y-m-d')"
-                        />
-                    </div>
-
-                    <!-- Dinner -->
-                    <div class="p-4 overflow-visible {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
-                        <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">Sopar</flux:text>
-                        <livewire:meal-slot
-                            :date="$day->format('Y-m-d')"
-                            :mealType="'dinner'"
-                            :key="'mobile-dinner-'.$day->format('Y-m-d')"
-                        />
-                    </div>
+                <!-- Meals grid -->
+                <div class="grid grid-cols-{{ count($this->mealTypes) }} divide-x divide-stone-200 overflow-visible">
+                    @foreach($this->mealTypes as $mealType)
+                        <div class="p-4 overflow-visible {{ $day->isToday() ? 'bg-emerald-50/50' : '' }}">
+                            <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">{{ $mealType->label() }}</flux:text>
+                            <livewire:meal-slot
+                                :date="$day->format('Y-m-d')"
+                                :mealType="$mealType->value"
+                                :key="'mobile-'.$mealType->value.'-'.$day->format('Y-m-d')"
+                            />
+                        </div>
+                    @endforeach
                 </div>
 
                 <div id="day-dropdown-{{ $day->format('Y-m-d') }}" class="mt-2 lg:hidden"></div>
@@ -96,29 +151,22 @@
                 </div>
             @endforeach
 
-            <!-- Files de Dinar -->
-            @foreach($weekDays as $day)
-                <div class="min-h-[100px] overflow-visible {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
-                    <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">Dinar</flux:text>
-                    <livewire:meal-slot
-                        :date="$day->format('Y-m-d')"
-                        :mealType="'lunch'"
-                        :key="'desktop-lunch-'.$day->format('Y-m-d')"
-                    />
-                </div>
+            <!-- Meal type rows -->
+            @foreach($this->mealTypes as $mealType)
+                @foreach($weekDays as $day)
+                    <div class="min-h-[100px] overflow-visible {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
+                        <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">{{ $mealType->label() }}</flux:text>
+                        <livewire:meal-slot
+                            :date="$day->format('Y-m-d')"
+                            :mealType="$mealType->value"
+                            :key="'desktop-'.$mealType->value.'-'.$day->format('Y-m-d')"
+                        />
+                    </div>
+                @endforeach
             @endforeach
+        </div>
+    </div>
 
-            <!-- Files de Sopar -->
-            @foreach($weekDays as $day)
-                <div class="min-h-[100px] overflow-visible {{ $day->isToday() ? 'bg-emerald-50 ring-2 ring-emerald-200' : 'bg-white' }} border border-stone-200 rounded-lg p-3">
-                    <flux:text size="xs" class="font-medium text-stone-500 mb-2 uppercase tracking-wide">Sopar</flux:text>
-                    <livewire:meal-slot
-                        :date="$day->format('Y-m-d')"
-                        :mealType="'dinner'"
-                        :key="'desktop-dinner-'.$day->format('Y-m-d')"
-                    />
-                </div>
-            @endforeach
         </div>
     </div>
 
