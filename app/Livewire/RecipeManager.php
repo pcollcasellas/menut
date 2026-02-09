@@ -2,15 +2,20 @@
 
 namespace App\Livewire;
 
+use App\Enums\RecipeType;
 use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class RecipeManager extends Component
 {
     use BelongsToHousehold;
+
+    #[Url]
+    public string $recipeType = 'meal';
 
     public bool $showForm = false;
 
@@ -26,6 +31,8 @@ class RecipeManager extends Component
 
     public string $instructions = '';
 
+    public string $type = 'meal';
+
     protected function rules(): array
     {
         return [
@@ -34,12 +41,21 @@ class RecipeManager extends Component
             'selectedIngredients' => 'nullable|array',
             'selectedIngredients.*' => 'string|max:255',
             'instructions' => 'nullable|string',
+            'type' => 'required|in:breakfast,meal',
         ];
+    }
+
+    public function setRecipeType(string $type): void
+    {
+        $this->recipeType = $type;
+        $this->showForm = false;
+        $this->resetForm();
     }
 
     public function create(): void
     {
         $this->resetForm();
+        $this->type = $this->recipeType;
         $this->showForm = true;
     }
 
@@ -54,6 +70,7 @@ class RecipeManager extends Component
         $this->description = $recipe->description ?? '';
         $this->selectedIngredients = $recipe->ingredientItems->pluck('name')->toArray();
         $this->instructions = $recipe->instructions ?? '';
+        $this->type = $recipe->type->value;
         $this->showForm = true;
     }
 
@@ -67,6 +84,7 @@ class RecipeManager extends Component
                 'name' => $this->name,
                 'description' => $this->description,
                 'instructions' => $this->instructions,
+                'type' => $this->type,
             ]);
         } else {
             $recipe = Recipe::create([
@@ -75,6 +93,7 @@ class RecipeManager extends Component
                 'name' => $this->name,
                 'description' => $this->description,
                 'instructions' => $this->instructions,
+                'type' => $this->type,
             ]);
         }
 
@@ -173,16 +192,25 @@ class RecipeManager extends Component
         $this->selectedIngredients = [];
         $this->ingredientSearch = '';
         $this->instructions = '';
+        $this->type = $this->recipeType;
         $this->resetValidation();
+    }
+
+    #[Computed]
+    public function currentRecipeType(): RecipeType
+    {
+        return RecipeType::from($this->recipeType);
     }
 
     public function render()
     {
         return view('livewire.recipe-manager', [
             'recipes' => Recipe::where('household_id', $this->householdId())
+                ->where('type', $this->recipeType)
                 ->with('ingredientItems')
                 ->orderBy('name')
                 ->get(),
+            'recipeTypes' => RecipeType::cases(),
         ]);
     }
 }

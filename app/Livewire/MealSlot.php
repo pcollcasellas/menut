@@ -2,9 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Enums\MealType;
 use App\Livewire\Concerns\BelongsToHousehold;
 use App\Models\MenuItem;
 use App\Models\Recipe;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -24,12 +26,18 @@ class MealSlot extends Component
 
     protected $listeners = ['selectorOpened' => 'handleSelectorOpened'];
 
-    public function mount(string $date, string $mealType): void
+    public function mount(string $date, MealType|string $mealType): void
     {
         $this->date = $date;
-        $this->mealType = $mealType;
+        $this->mealType = $mealType instanceof MealType ? $mealType->value : $mealType;
 
         $this->refreshFromMenu();
+    }
+
+    #[Computed]
+    public function mealTypeEnum(): MealType
+    {
+        return MealType::from($this->mealType);
     }
 
     #[On('menu-updated')]
@@ -114,7 +122,8 @@ class MealSlot extends Component
 
     public function render()
     {
-        $recipesQuery = Recipe::where('household_id', $this->householdId());
+        $recipesQuery = Recipe::where('household_id', $this->householdId())
+            ->where('type', $this->mealTypeEnum->recipeType());
 
         if (trim($this->searchQuery) !== '') {
             $recipesQuery->where('name', 'like', '%'.$this->searchQuery.'%');

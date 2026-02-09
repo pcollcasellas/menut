@@ -41,4 +41,14 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Indicate that the user wants to see breakfast in their menu.
+     */
+    public function withBreakfast(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'show_breakfast' => true,
+        ]);
+    }
 }
